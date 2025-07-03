@@ -11,7 +11,7 @@
 //
 // class ChamberFirestore implements ChamberRepository {
 //
-//   var logger = AppUtilities.logger;
+//   var logger = AppConfig.logger;
 //   final profileReference = FirebaseFirestore.instance.collectionGroup(AppFirestoreCollectionConstants.profiles);
 //
 //   @override

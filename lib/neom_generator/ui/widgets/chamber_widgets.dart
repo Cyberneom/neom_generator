@@ -2,12 +2,23 @@ import 'package:enum_to_string/enum_to_string.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:neom_commons/core/domain/model/chamber.dart';
-import 'package:neom_commons/core/domain/model/neom/chamber_preset.dart';
-import 'package:neom_commons/core/ui/widgets/handled_cached_network_image.dart';
-import 'package:neom_commons/core/ui/widgets/rating_heart_bar.dart';
-import 'package:neom_commons/core/utils/enums/chamber_preset_state.dart';
-import 'package:neom_commons/neom_commons.dart';
+import 'package:neom_commons/commons/app_flavour.dart';
+import 'package:neom_commons/commons/ui/theme/app_color.dart';
+import 'package:neom_commons/commons/ui/theme/app_theme.dart';
+import 'package:neom_commons/commons/ui/widgets/handled_cached_network_image.dart';
+import 'package:neom_commons/commons/ui/widgets/rating_heart_bar.dart';
+import 'package:neom_commons/commons/utils/app_alerts.dart';
+import 'package:neom_commons/commons/utils/constants/app_constants.dart';
+import 'package:neom_commons/commons/utils/constants/app_translation_constants.dart';
+import 'package:neom_core/core/app_properties.dart';
+import 'package:neom_core/core/domain/model/neom/chamber.dart';
+import 'package:neom_core/core/domain/model/neom/chamber_preset.dart';
+import 'package:neom_core/core/utils/constants/app_route_constants.dart';
+import 'package:neom_core/core/utils/core_utilities.dart';
+import 'package:neom_core/core/utils/enums/app_in_use.dart';
+import 'package:neom_core/core/utils/enums/app_item_state.dart';
+import 'package:neom_core/core/utils/enums/chamber_preset_state.dart';
+import 'package:neom_core/core/utils/enums/profile_type.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 
 import '../chamber/chamber_controller.dart';
@@ -24,12 +35,12 @@ Widget buildChamberList(BuildContext context, ChamberController _) {
         contentPadding: const EdgeInsets.symmetric(horizontal: 10),
         leading: SizedBox(
             width: 50,
-            child: HandledCachedNetworkImage(chamber.imgUrl.isNotEmpty ? chamber.imgUrl : AppFlavour.getAppLogoUrl())
+            child: HandledCachedNetworkImage(chamber.imgUrl.isNotEmpty ? chamber.imgUrl : AppProperties.getAppLogoUrl())
         ),
         title: Row(
             children: <Widget>[
               Text(chamber.name.length > AppConstants.maxItemlistNameLength
-                  ? "${chamber.name.substring(0,AppConstants.maxItemlistNameLength).capitalizeFirst}..."
+                  ? "${chamber.name.substring(0, AppConstants.maxItemlistNameLength).capitalizeFirst}..."
                   : chamber.name.capitalizeFirst),
               ///DEPRECATE .isFav ? const Icon(Icons.favorite, size: 10,) : SizedBox.shrink()
             ]),
@@ -109,7 +120,7 @@ Widget buildChamberList(BuildContext context, ChamberController _) {
                 ),
                 onPressed: () async {
                   if(_.chambers.length == 1) {
-                    AppUtilities.showAlert(context,
+                    AppAlerts.showAlert(context,
                         title: AppTranslationConstants.itemlistPrefs.tr,
                         message: AppTranslationConstants.cantRemoveMainItemlist.tr);
                   } else {

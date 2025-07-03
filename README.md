@@ -1,2 +1,2 @@
-# neom_profile
-Profile and Mate for current social network apps.
+# neom_generator
+Neom Generator for Open Neom.

@@ -5,8 +5,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
-import 'package:neom_commons/core/ui/widgets/read_more_container.dart';
-import 'package:neom_commons/neom_commons.dart';
+import 'package:neom_commons/commons/ui/theme/app_color.dart';
+import 'package:neom_commons/commons/ui/theme/app_theme.dart';
+import 'package:neom_commons/commons/ui/widgets/appbar_child.dart';
+import 'package:neom_commons/commons/ui/widgets/core_widgets.dart';
+import 'package:neom_commons/commons/ui/widgets/read_more_container.dart';
+import 'package:neom_commons/commons/utils/app_utilities.dart';
+import 'package:neom_commons/commons/utils/constants/app_assets.dart';
+import 'package:neom_commons/commons/utils/constants/app_page_id_constants.dart';
+import 'package:neom_commons/commons/utils/constants/app_translation_constants.dart';
+import 'package:neom_commons/commons/utils/constants/message_translation_constants.dart';
+import 'package:neom_core/core/app_config.dart';
+import 'package:neom_core/core/utils/core_utilities.dart';
+import 'package:neom_core/core/utils/enums/app_item_state.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:sleek_circular_slider/sleek_circular_slider.dart';
 import 'package:surround_frequency_generator/surround_frequency_generator.dart';
@@ -41,7 +52,7 @@ class NeomGeneratorPage extends StatelessWidget {
             }
             _.isPlaying.value = false;
           } catch (e) {
-            AppUtilities.logger.e(e.toString());
+            AppConfig.logger.e(e.toString());
           }
           return true;
         },
@@ -247,14 +258,14 @@ class NeomGeneratorPage extends StatelessWidget {
                                                       allowHalfRating: false,
                                                       itemCount: 5,
                                                       ratingWidget: RatingWidget(
-                                                        full: CoreUtilities.ratingImage(AppAssets.heart),
-                                                        half: CoreUtilities.ratingImage(AppAssets.heartHalf),
-                                                        empty: CoreUtilities.ratingImage(AppAssets.heartBorder),
+                                                        full: AppUtilities.ratingImage(AppAssets.heart),
+                                                        half: AppUtilities.ratingImage(AppAssets.heartHalf),
+                                                        empty: AppUtilities.ratingImage(AppAssets.heartBorder),
                                                       ),
                                                       itemPadding: const EdgeInsets.symmetric(horizontal: 1.0),
                                                       itemSize: 10,
                                                       onRatingUpdate: (rating) {
-                                                        AppUtilities.logger.i("New Rating set to $rating");
+                                                        AppConfig.logger.i("New Rating set to $rating");
                                                       },
                                                     ),
                                                   ],

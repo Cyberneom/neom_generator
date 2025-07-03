@@ -1,5 +1,5 @@
-import 'package:neom_commons/core/domain/model/neom/chamber_preset.dart';
-import 'package:neom_commons/core/utils/enums/chamber_preset_state.dart';
+import 'package:neom_core/core/domain/model/neom/chamber_preset.dart';
+import 'package:neom_core/core/utils/enums/chamber_preset_state.dart';
 
 abstract class ChamberPresetService {
 

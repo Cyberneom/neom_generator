@@ -1,22 +1,25 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
-import 'package:neom_commons/core/data/firestore/chamber_firestore.dart';
-import 'package:neom_commons/core/data/implementations/user_controller.dart';
-import 'package:neom_commons/core/domain/model/app_profile.dart';
-import 'package:neom_commons/core/domain/model/band.dart';
-import 'package:neom_commons/core/domain/model/chamber.dart';
-import 'package:neom_commons/core/domain/use_cases/chamber_service.dart';
-import 'package:neom_commons/core/utils/app_utilities.dart';
-import 'package:neom_commons/core/utils/constants/app_page_id_constants.dart';
-import 'package:neom_commons/core/utils/constants/app_route_constants.dart';
-import 'package:neom_commons/core/utils/constants/app_translation_constants.dart';
-import 'package:neom_commons/core/utils/constants/message_translation_constants.dart';
-import 'package:neom_commons/core/utils/enums/owner_type.dart';
+import 'package:neom_commons/commons/utils/app_utilities.dart';
+import 'package:neom_commons/commons/utils/constants/app_page_id_constants.dart';
+import 'package:neom_commons/commons/utils/constants/app_translation_constants.dart';
+import 'package:neom_commons/commons/utils/constants/message_translation_constants.dart';
+import 'package:neom_core/core/app_config.dart';
+import 'package:neom_core/core/data/firestore/chamber_firestore.dart';
+import 'package:neom_core/core/data/implementations/user_controller.dart';
+import 'package:neom_core/core/domain/model/app_profile.dart';
+import 'package:neom_core/core/domain/model/band.dart';
+import 'package:neom_core/core/domain/model/neom/chamber.dart';
+import 'package:neom_core/core/domain/use_cases/chamber_service.dart';
+import 'package:neom_core/core/utils/constants/app_route_constants.dart';
+import 'package:neom_core/core/utils/enums/owner_type.dart';
+
+
 
 class ChamberController extends GetxController implements ChamberService {
 
-  final logger = AppUtilities.logger;
+  final logger = AppConfig.logger;
   final userController = Get.find<UserController>();
 
   Chamber currentChamber = Chamber();
@@ -27,8 +30,6 @@ class ChamberController extends GetxController implements ChamberService {
   final RxMap<String, Chamber> chambers = <String, Chamber>{}.obs;
   final RxList<Chamber> addedChambers = <Chamber>[].obs;
 
-  ///DEPRECATED
-  // Chamber _favChamber = Chamber();
   AppProfile profile = AppProfile();
   Band? band;
   String ownerId = '';

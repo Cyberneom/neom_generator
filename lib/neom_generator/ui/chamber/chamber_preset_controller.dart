@@ -1,23 +1,24 @@
 import 'package:get/get.dart';
-import 'package:neom_commons/core/app_flavour.dart';
-import 'package:neom_commons/core/data/api_services/push_notification/firebase_messaging_calls.dart';
-import 'package:neom_commons/core/data/firestore/chamber_firestore.dart';
-import 'package:neom_commons/core/data/implementations/user_controller.dart';
-import 'package:neom_commons/core/domain/model/band.dart';
-import 'package:neom_commons/core/domain/model/chamber.dart';
-import 'package:neom_commons/core/domain/model/neom/chamber_preset.dart';
-import 'package:neom_commons/core/utils/app_utilities.dart';
-import 'package:neom_commons/core/utils/constants/app_page_id_constants.dart';
-import 'package:neom_commons/core/utils/enums/app_in_use.dart';
-import 'package:neom_commons/core/utils/enums/chamber_preset_state.dart';
-import 'package:neom_commons/core/utils/enums/owner_type.dart';
-import 'package:neom_commons/core/utils/enums/push_notification_type.dart';
+import 'package:neom_commons/commons/app_flavour.dart';
+import 'package:neom_commons/commons/utils/constants/app_page_id_constants.dart';
+import 'package:neom_commons/commons/utils/constants/app_translation_constants.dart';
+import 'package:neom_core/core/app_config.dart';
+import 'package:neom_core/core/data/api_services/push_notification/firebase_messaging_calls.dart';
+import 'package:neom_core/core/data/firestore/chamber_firestore.dart';
+import 'package:neom_core/core/data/implementations/user_controller.dart';
+import 'package:neom_core/core/domain/model/band.dart';
+import 'package:neom_core/core/domain/model/neom/chamber.dart';
+import 'package:neom_core/core/domain/model/neom/chamber_preset.dart';
+import 'package:neom_core/core/utils/enums/app_in_use.dart';
+import 'package:neom_core/core/utils/enums/chamber_preset_state.dart';
+import 'package:neom_core/core/utils/enums/owner_type.dart';
+import 'package:neom_core/core/utils/enums/push_notification_type.dart';
 
 import '../../domain/use_cases/chamber_preset_service.dart';
 
 class ChamberPresetController extends GetxController implements ChamberPresetService {
 
-  var logger = AppUtilities.logger;
+  var logger = AppConfig.logger;
   final userController = Get.find<UserController>();
 
   ChamberPreset chamberPreset = ChamberPreset();
@@ -142,6 +143,8 @@ class ChamberPresetController extends GetxController implements ChamberPresetSer
           FirebaseMessagingCalls.sendPublicPushNotification(
               fromProfile: userController.profile,
               notificationType: PushNotificationType.chamberPresetAdded,
+              toProfileId: '',
+              title: AppTranslationConstants.chamberPresetAdded,
               referenceId: chamberPreset.id,
               imgUrl: chamberPreset.imgUrl
           );

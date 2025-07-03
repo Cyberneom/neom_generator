@@ -4,20 +4,20 @@ import 'dart:typed_data';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:get/get.dart';
-import 'package:neom_commons/core/app_flavour.dart';
-import 'package:neom_commons/core/data/firestore/chamber_firestore.dart';
-import 'package:neom_commons/core/data/firestore/profile_firestore.dart';
-import 'package:neom_commons/core/data/implementations/user_controller.dart';
-import 'package:neom_commons/core/domain/model/app_profile.dart';
-import 'package:neom_commons/core/domain/model/chamber.dart';
-import 'package:neom_commons/core/domain/model/neom/chamber_preset.dart';
-import 'package:neom_commons/core/domain/model/neom/neom_frequency.dart';
-import 'package:neom_commons/core/domain/model/neom/neom_parameter.dart';
-import 'package:neom_commons/core/utils/app_utilities.dart';
-import 'package:neom_commons/core/utils/constants/app_page_id_constants.dart';
-import 'package:neom_commons/core/utils/constants/app_translation_constants.dart';
-import 'package:neom_commons/core/utils/enums/app_in_use.dart';
-import 'package:neom_commons/core/utils/enums/app_item_state.dart';
+import 'package:neom_commons/commons/utils/app_utilities.dart';
+import 'package:neom_commons/commons/utils/constants/app_page_id_constants.dart';
+import 'package:neom_commons/commons/utils/constants/app_translation_constants.dart';
+import 'package:neom_core/core/app_config.dart';
+import 'package:neom_core/core/app_properties.dart';
+import 'package:neom_core/core/data/firestore/chamber_firestore.dart';
+import 'package:neom_core/core/data/firestore/profile_firestore.dart';
+import 'package:neom_core/core/data/implementations/user_controller.dart';
+import 'package:neom_core/core/domain/model/app_profile.dart';
+import 'package:neom_core/core/domain/model/neom/chamber.dart';
+import 'package:neom_core/core/domain/model/neom/chamber_preset.dart';
+import 'package:neom_core/core/domain/model/neom/neom_frequency.dart';
+import 'package:neom_core/core/domain/model/neom/neom_parameter.dart';
+import 'package:neom_core/core/utils/enums/app_item_state.dart';
 import 'package:neom_frequencies/frequencies/ui/frequency_controller.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:pitch_detector_dart/pitch_detector.dart';
@@ -91,7 +91,7 @@ class NeomGeneratorController extends GetxController implements NeomGeneratorSer
       _recorder = FlutterSoundRecorder();
       initializeRecorder();
     } catch(e) {
-      AppUtilities.logger.e(e.toString());
+      AppConfig.logger.e(e.toString());
     }
 
   }
@@ -115,7 +115,7 @@ class NeomGeneratorController extends GetxController implements NeomGeneratorSer
           ? chamberPreset.description : chamberPreset.neomFrequency!.description.isNotEmpty ? chamberPreset.neomFrequency!.description : "";
 
     } catch (e) {
-      AppUtilities.logger.e(e.toString());
+      AppConfig.logger.e(e.toString());
     }
 
     isLoading.value = false;
@@ -143,7 +143,7 @@ class NeomGeneratorController extends GetxController implements NeomGeneratorSer
           freq:chamberPreset.neomFrequency!.frequency);
         soundController.value = customAudioParam;
     } catch (e) {
-      AppUtilities.logger.e(e.toString());
+      AppConfig.logger.e(e.toString());
       Get.back();
     }
 
@@ -192,7 +192,7 @@ class NeomGeneratorController extends GetxController implements NeomGeneratorSer
       await soundController.play().whenComplete(() => isPlaying.value = true);
     }
 
-    AppUtilities.logger.i('isPlaying: $isPlaying');
+    AppConfig.logger.i('isPlaying: $isPlaying');
     update([AppPageIdConstants.generator]);
   }
 
@@ -214,16 +214,16 @@ class NeomGeneratorController extends GetxController implements NeomGeneratorSer
 
   Future<void> playStopPreview({bool stopPreview = false}) async {
 
-    AppUtilities.logger.d("Previewing Chamber Preset ${chamberPreset.name}");
+    AppConfig.logger.d("Previewing Chamber Preset ${chamberPreset.name}");
 
     try {
       if(await soundController.isPlaying() || stopPreview) {
-        AppUtilities.logger.d("Stopping Chamber Preset ${chamberPreset.name}");
+        AppConfig.logger.d("Stopping Chamber Preset ${chamberPreset.name}");
         await soundController.stop();
         // await soundController.init();
         changeControllerStatus(false);
       } else {
-        AppUtilities.logger.d("Playing Chamber Preset ${chamberPreset.name}");
+        AppConfig.logger.d("Playing Chamber Preset ${chamberPreset.name}");
         settingChamber();
         await soundController.init();
         await soundController.play();
@@ -231,7 +231,7 @@ class NeomGeneratorController extends GetxController implements NeomGeneratorSer
       }
       // await audioPlayer.play(BytesSource(createSample(240)));
     } catch(e) {
-      AppUtilities.logger.e(e.toString());
+      AppConfig.logger.e(e.toString());
     }
 
     update([AppPageIdConstants.generator]);
@@ -239,20 +239,20 @@ class NeomGeneratorController extends GetxController implements NeomGeneratorSer
 
 
   void setFrequencyState(AppItemState newState){
-    AppUtilities.logger.d("Setting new appItem $newState");
+    AppConfig.logger.d("Setting new appItem $newState");
     frequencyState.value = newState.value;
     chamberPreset.state = newState.value;
     update([AppPageIdConstants.generator]);
   }
 
   void setSelectedItemlist(String selectedItemlist){
-    AppUtilities.logger.d("Setting selectedItemlist $selectedItemlist");
+    AppConfig.logger.d("Setting selectedItemlist $selectedItemlist");
     chamber.value.id  = selectedItemlist;
     update([AppPageIdConstants.generator]);
   }
 
   bool frequencyAlreadyInItemlist() {
-    AppUtilities.logger.d("Verifying if Item already exists in chambers");
+    AppConfig.logger.d("Verifying if Item already exists in chambers");
 
     bool alreadyInItemlist = false;
     for (var nChamber in chambers.values) {
@@ -264,7 +264,7 @@ class NeomGeneratorController extends GetxController implements NeomGeneratorSer
       }
     }
 
-    AppUtilities.logger.d("Frequency already exists in chambers: $alreadyInItemlist");
+    AppConfig.logger.d("Frequency already exists in chambers: $alreadyInItemlist");
     return alreadyInItemlist;
   }
 
@@ -275,14 +275,14 @@ class NeomGeneratorController extends GetxController implements NeomGeneratorSer
       isLoading.value = true;
       update([AppPageIdConstants.generator]);
 
-      AppUtilities.logger.i("ChamberPreset would be added as $frequencyState for Itemlist ${chamber.value.id}");
+      AppConfig.logger.i("ChamberPreset would be added as $frequencyState for Itemlist ${chamber.value.id}");
 
       if(frequencyPracticeState > 0) frequencyState.value = frequencyPracticeState;
 
       if(noChambers) {
         chamber.value.name = AppTranslationConstants.myFavItemlistName.tr;
         chamber.value.description = AppTranslationConstants.myFavItemlistDesc.tr;
-        chamber.value.imgUrl = AppFlavour.getAppLogoUrl();
+        chamber.value.imgUrl = AppProperties.getAppLogoUrl();
         chamber.value.ownerId = profile.id;
         chamber.value.id = await ChamberFirestore().insert(chamber.value);
       } else {
@@ -295,24 +295,20 @@ class NeomGeneratorController extends GetxController implements NeomGeneratorSer
           chamberPreset.id = "${chamberPreset.neomFrequency!.frequency.ceilToDouble().toString()}_${chamberPreset.neomParameter!.volume.toString()}"
               "_${chamberPreset.neomParameter!.x.toString()}_${chamberPreset.neomParameter!.y.toString()}_${chamberPreset.neomParameter!.z.toString()}";
           chamberPreset.name = "${AppTranslationConstants.frequency.tr} ${chamberPreset.neomFrequency!.frequency.ceilToDouble().toString()} Hz";
-          chamberPreset.imgUrl = AppFlavour.getAppLogoUrl();
+          chamberPreset.imgUrl = AppProperties.getAppLogoUrl();
           chamberPreset.ownerId = profile.id;
           chamberPreset.neomFrequency!.description = frequencyDescription.value;
           if(await ChamberFirestore().addPreset(chamber.value.id, chamberPreset)) {
             await ProfileFirestore().addChamberPreset(profileId: profile.id, chamberPresetId: chamberPreset.id);
             await userController.reloadProfileItemlists();
             await userController.loadProfileChambers();
-            if(AppFlavour.appInUse == AppInUse.c) await userController.loadProfileChambers();
             userController.profile.chamberPresets?.add(chamberPreset.id);
-            // userController.profile.chambers ??= {};
-            // userController.profile.chambers![chamber.value.id] = chamber.value;
-            // chambers.value = userController.profile.chambers ?? {};
-            AppUtilities.logger.d("Preset added to Neom Chamber");
+            AppConfig.logger.d("Preset added to Neom Chamber");
           } else {
-            AppUtilities.logger.d("Preset not added to Neom Chamber");
+            AppConfig.logger.d("Preset not added to Neom Chamber");
           }
         } catch (e) {
-          AppUtilities.logger.e(e.toString());
+          AppConfig.logger.e(e.toString());
           AppUtilities.showSnackBar(
               title: AppTranslationConstants.generator.tr,
               message: 'Algo salió mal agregando tu preset a tu cámara Neom.'
@@ -342,7 +338,7 @@ class NeomGeneratorController extends GetxController implements NeomGeneratorSer
       isLoading.value = true;
       update([AppPageIdConstants.generator]);
 
-      AppUtilities.logger.i("ChamberPreset would be removed for Itemlist ${chamber.value.id}");
+      AppConfig.logger.i("ChamberPreset would be removed for Itemlist ${chamber.value.id}");
 
       if(chamber.value.id.isEmpty) chamber.value.id = chambers.values.first.id;
 
@@ -351,12 +347,12 @@ class NeomGeneratorController extends GetxController implements NeomGeneratorSer
           if(await ChamberFirestore().deletePreset(chamber.value.id, chamberPreset)) {
             await userController.reloadProfileItemlists();
             chambers.value = userController.profile.chambers ?? {};
-            AppUtilities.logger.d("Preset removed from Neom Chamber");
+            AppConfig.logger.d("Preset removed from Neom Chamber");
           } else {
-            AppUtilities.logger.d("Preset not removed from Neom Chamber");
+            AppConfig.logger.d("Preset not removed from Neom Chamber");
           }
         } catch (e) {
-          AppUtilities.logger.e(e.toString());
+          AppConfig.logger.e(e.toString());
           AppUtilities.showSnackBar(
               title: AppTranslationConstants.neomChamber.tr,
               message: 'Algo salió mal eliminando tu preset de tu cámara Neom.'
@@ -387,7 +383,7 @@ class NeomGeneratorController extends GetxController implements NeomGeneratorSer
 
       soundController.setPosition(x,y,z);
     } catch(e) {
-      AppUtilities.logger.e(e.toString());
+      AppConfig.logger.e(e.toString());
     }
 
     if(existsInChamber.value) isUpdate.value = true;
@@ -397,7 +393,7 @@ class NeomGeneratorController extends GetxController implements NeomGeneratorSer
   Future<void> increaseFrequency({double step = 1}) async {
     double newFrequency = chamberPreset.neomFrequency!.frequency + step;
     if(newFrequency <= 0) return;
-    AppUtilities.logger.d("Increasing Frequency from ${chamberPreset.neomFrequency!.frequency} to $newFrequency");
+    AppConfig.logger.d("Increasing Frequency from ${chamberPreset.neomFrequency!.frequency} to $newFrequency");
     chamberPreset.neomFrequency!.frequency = newFrequency;
     frequencyDescription.value = "";
     for (var element in frequencyController.frequencies.values) {
@@ -448,7 +444,7 @@ class NeomGeneratorController extends GetxController implements NeomGeneratorSer
 
       double freqPitch = await getPitchFromAudioData(audioData);
       if(freqPitch > NeomGeneratorConstants.frequencyMin && freqPitch < NeomGeneratorConstants.frequencyMax) {
-        AppUtilities.logger.d("Pitch: $freqPitch Hz");
+        AppConfig.logger.d("Pitch: $freqPitch Hz");
         detectedFrequency = freqPitch;
         detectedPitches.add(freqPitch);
       }
@@ -460,7 +456,7 @@ class NeomGeneratorController extends GetxController implements NeomGeneratorSer
   Future<void> startRecording() async {
 
 
-    AppUtilities.logger.d("Start Recording");
+    AppConfig.logger.d("Start Recording");
     isRecording = true;
     detectedFrequency = 0;
 
@@ -487,7 +483,7 @@ class NeomGeneratorController extends GetxController implements NeomGeneratorSer
         }
       });
     } catch(e) {
-      AppUtilities.logger.e(e.toString());
+      AppConfig.logger.e(e.toString());
     }
 
     update([AppPageIdConstants.generator]);
@@ -525,7 +521,7 @@ class NeomGeneratorController extends GetxController implements NeomGeneratorSer
         PitchDetectorResult pitchResult = await pitchDetectorDart.getPitchFromIntBuffer(chunkAsUint8List);
         pitch = pitchResult.pitch.roundToDouble();
       } catch (e) {
-        AppUtilities.logger.e("Pitch detector error: $e");
+        AppConfig.logger.e("Pitch detector error: $e");
       }
     }
 

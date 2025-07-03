@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:neom_commons/core/domain/model/item_list.dart';
-import 'package:neom_commons/core/domain/model/neom/chamber_preset.dart';
+import 'package:neom_core/core/domain/model/item_list.dart';
+import 'package:neom_core/core/domain/model/neom/chamber_preset.dart';
 
 abstract class ChamberRepository {
 
