@@ -1,18 +1,18 @@
 import 'package:get/get.dart';
-import 'package:neom_commons/commons/app_flavour.dart';
-import 'package:neom_commons/commons/utils/constants/app_page_id_constants.dart';
-import 'package:neom_commons/commons/utils/constants/app_translation_constants.dart';
-import 'package:neom_core/core/app_config.dart';
-import 'package:neom_core/core/data/api_services/push_notification/firebase_messaging_calls.dart';
-import 'package:neom_core/core/data/firestore/chamber_firestore.dart';
-import 'package:neom_core/core/data/implementations/user_controller.dart';
-import 'package:neom_core/core/domain/model/band.dart';
-import 'package:neom_core/core/domain/model/neom/chamber.dart';
-import 'package:neom_core/core/domain/model/neom/chamber_preset.dart';
-import 'package:neom_core/core/utils/enums/app_in_use.dart';
-import 'package:neom_core/core/utils/enums/chamber_preset_state.dart';
-import 'package:neom_core/core/utils/enums/owner_type.dart';
-import 'package:neom_core/core/utils/enums/push_notification_type.dart';
+import 'package:neom_commons/app_flavour.dart';
+import 'package:neom_commons/utils/constants/app_page_id_constants.dart';
+import 'package:neom_commons/utils/constants/app_translation_constants.dart';
+import 'package:neom_core/app_config.dart';
+import 'package:neom_core/data/api_services/push_notification/firebase_messaging_calls.dart';
+import 'package:neom_core/data/firestore/chamber_firestore.dart';
+import 'package:neom_core/data/implementations/user_controller.dart';
+import 'package:neom_core/domain/model/band.dart';
+import 'package:neom_core/domain/model/neom/chamber.dart';
+import 'package:neom_core/domain/model/neom/chamber_preset.dart';
+import 'package:neom_core/utils/enums/app_in_use.dart';
+import 'package:neom_core/utils/enums/chamber_preset_state.dart';
+import 'package:neom_core/utils/enums/owner_type.dart';
+import 'package:neom_core/utils/enums/push_notification_type.dart';
 
 import '../../domain/use_cases/chamber_preset_service.dart';
 
@@ -68,7 +68,7 @@ class ChamberPresetController extends GetxController implements ChamberPresetSer
         logger.i("ChamberPresetController Init ready loco with no chamber");
       }
 
-      if(AppFlavour.appInUse == AppInUse.c) {
+      if(AppConfig.instance.appInUse == AppInUse.c) {
         isFixed = true;
       }
     } catch (e) {

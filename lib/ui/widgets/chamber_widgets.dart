@@ -2,23 +2,24 @@ import 'package:enum_to_string/enum_to_string.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:neom_commons/commons/app_flavour.dart';
-import 'package:neom_commons/commons/ui/theme/app_color.dart';
-import 'package:neom_commons/commons/ui/theme/app_theme.dart';
-import 'package:neom_commons/commons/ui/widgets/handled_cached_network_image.dart';
-import 'package:neom_commons/commons/ui/widgets/rating_heart_bar.dart';
-import 'package:neom_commons/commons/utils/app_alerts.dart';
-import 'package:neom_commons/commons/utils/constants/app_constants.dart';
-import 'package:neom_commons/commons/utils/constants/app_translation_constants.dart';
-import 'package:neom_core/core/app_properties.dart';
-import 'package:neom_core/core/domain/model/neom/chamber.dart';
-import 'package:neom_core/core/domain/model/neom/chamber_preset.dart';
-import 'package:neom_core/core/utils/constants/app_route_constants.dart';
-import 'package:neom_core/core/utils/core_utilities.dart';
-import 'package:neom_core/core/utils/enums/app_in_use.dart';
-import 'package:neom_core/core/utils/enums/app_item_state.dart';
-import 'package:neom_core/core/utils/enums/chamber_preset_state.dart';
-import 'package:neom_core/core/utils/enums/profile_type.dart';
+import 'package:neom_commons/app_flavour.dart';
+import 'package:neom_commons/ui/theme/app_color.dart';
+import 'package:neom_commons/ui/theme/app_theme.dart';
+import 'package:neom_commons/ui/widgets/handled_cached_network_image.dart';
+import 'package:neom_commons/ui/widgets/rating_heart_bar.dart';
+import 'package:neom_commons/utils/app_alerts.dart';
+import 'package:neom_commons/utils/constants/app_constants.dart';
+import 'package:neom_commons/utils/constants/app_translation_constants.dart';
+import 'package:neom_core/app_config.dart';
+import 'package:neom_core/app_properties.dart';
+import 'package:neom_core/domain/model/neom/chamber.dart';
+import 'package:neom_core/domain/model/neom/chamber_preset.dart';
+import 'package:neom_core/utils/constants/app_route_constants.dart';
+import 'package:neom_core/utils/core_utilities.dart';
+import 'package:neom_core/utils/enums/app_in_use.dart';
+import 'package:neom_core/utils/enums/app_item_state.dart';
+import 'package:neom_core/utils/enums/chamber_preset_state.dart';
+import 'package:neom_core/utils/enums/profile_type.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 
 import '../chamber/chamber_controller.dart';
@@ -157,7 +158,7 @@ Widget buildPresetsList(BuildContext context, ChamberPresetController _) {
                     ? "${chamberPreset.name.substring(0,AppConstants.maxAppItemNameLength)}..."
                     : chamberPreset.name),
                 const SizedBox(width:5),
-                (AppFlavour.appInUse == AppInUse.c || (_.userController.profile.type == ProfileType.appArtist && !_.isFixed)) ?
+                (AppConfig.instance.appInUse == AppInUse.c || (_.userController.profile.type == ProfileType.appArtist && !_.isFixed)) ?
                 RatingHeartBar(state: chamberPreset.state.toDouble()) : const SizedBox.shrink(),
               ]
           ),
@@ -181,7 +182,7 @@ Widget buildPresetsList(BuildContext context, ChamberPresetController _) {
               Get.toNamed(AppRouteConstants.generator,  arguments: [preset.clone()]);
             }
           },
-          onLongPress: () => _.chamber.isModifiable && (AppFlavour.appInUse != AppInUse.c || !_.isFixed) ? Alert(
+          onLongPress: () => _.chamber.isModifiable && (AppConfig.instance.appInUse != AppInUse.c || !_.isFixed) ? Alert(
               context: context,
               title: AppTranslationConstants.appItemPrefs.tr,
               style: AlertStyle(

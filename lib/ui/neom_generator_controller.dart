@@ -4,21 +4,21 @@ import 'dart:typed_data';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:get/get.dart';
-import 'package:neom_commons/commons/utils/app_utilities.dart';
-import 'package:neom_commons/commons/utils/constants/app_page_id_constants.dart';
-import 'package:neom_commons/commons/utils/constants/app_translation_constants.dart';
-import 'package:neom_core/core/app_config.dart';
-import 'package:neom_core/core/app_properties.dart';
-import 'package:neom_core/core/data/firestore/chamber_firestore.dart';
-import 'package:neom_core/core/data/firestore/profile_firestore.dart';
-import 'package:neom_core/core/data/implementations/user_controller.dart';
-import 'package:neom_core/core/domain/model/app_profile.dart';
-import 'package:neom_core/core/domain/model/neom/chamber.dart';
-import 'package:neom_core/core/domain/model/neom/chamber_preset.dart';
-import 'package:neom_core/core/domain/model/neom/neom_frequency.dart';
-import 'package:neom_core/core/domain/model/neom/neom_parameter.dart';
-import 'package:neom_core/core/utils/enums/app_item_state.dart';
-import 'package:neom_frequencies/frequencies/ui/frequency_controller.dart';
+import 'package:neom_commons/utils/app_utilities.dart';
+import 'package:neom_commons/utils/constants/app_page_id_constants.dart';
+import 'package:neom_commons/utils/constants/app_translation_constants.dart';
+import 'package:neom_core/app_config.dart';
+import 'package:neom_core/app_properties.dart';
+import 'package:neom_core/data/firestore/chamber_firestore.dart';
+import 'package:neom_core/data/firestore/profile_firestore.dart';
+import 'package:neom_core/data/implementations/user_controller.dart';
+import 'package:neom_core/domain/model/app_profile.dart';
+import 'package:neom_core/domain/model/neom/chamber.dart';
+import 'package:neom_core/domain/model/neom/chamber_preset.dart';
+import 'package:neom_core/domain/model/neom/neom_frequency.dart';
+import 'package:neom_core/domain/model/neom/neom_parameter.dart';
+import 'package:neom_core/domain/use_cases/frequency_service.dart';
+import 'package:neom_core/utils/enums/app_item_state.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:pitch_detector_dart/pitch_detector.dart';
 import 'package:pitch_detector_dart/pitch_detector_result.dart';
@@ -33,9 +33,10 @@ class NeomGeneratorController extends GetxController implements NeomGeneratorSer
 
   final userController = Get.find<UserController>();
 
+  final frequencyServiceImpl = Get.find<FrequencyService>();
+
   ///EXPERIMENTAL
   // final neom360viewerController = Get.put(Neom360ViewerController());
-  final frequencyController = Get.put(FrequencyController());
 
   late SoundController soundController;
   WebViewController webViewAndroidController = WebViewController();
@@ -161,7 +162,7 @@ class NeomGeneratorController extends GetxController implements NeomGeneratorSer
 
     chamberPreset.neomFrequency!.frequency = frequency.ceilToDouble();
     frequencyDescription.value = "";
-    for (var element in frequencyController.frequencies.values) {
+    for (var element in frequencyServiceImpl.frequencies.values) {
       if(element.frequency.ceilToDouble() == frequency.ceilToDouble()) {
         frequencyDescription.value = element.description;
       }
@@ -396,7 +397,7 @@ class NeomGeneratorController extends GetxController implements NeomGeneratorSer
     AppConfig.logger.d("Increasing Frequency from ${chamberPreset.neomFrequency!.frequency} to $newFrequency");
     chamberPreset.neomFrequency!.frequency = newFrequency;
     frequencyDescription.value = "";
-    for (var element in frequencyController.frequencies.values) {
+    for (var element in frequencyServiceImpl.frequencies.values) {
       if(element.frequency.ceilToDouble() == newFrequency) {
         frequencyDescription.value = element.description;
       }

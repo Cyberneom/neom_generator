@@ -1,19 +1,19 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
-import 'package:neom_commons/commons/utils/app_utilities.dart';
-import 'package:neom_commons/commons/utils/constants/app_page_id_constants.dart';
-import 'package:neom_commons/commons/utils/constants/app_translation_constants.dart';
-import 'package:neom_commons/commons/utils/constants/message_translation_constants.dart';
-import 'package:neom_core/core/app_config.dart';
-import 'package:neom_core/core/data/firestore/chamber_firestore.dart';
-import 'package:neom_core/core/data/implementations/user_controller.dart';
-import 'package:neom_core/core/domain/model/app_profile.dart';
-import 'package:neom_core/core/domain/model/band.dart';
-import 'package:neom_core/core/domain/model/neom/chamber.dart';
-import 'package:neom_core/core/domain/use_cases/chamber_service.dart';
-import 'package:neom_core/core/utils/constants/app_route_constants.dart';
-import 'package:neom_core/core/utils/enums/owner_type.dart';
+import 'package:neom_commons/utils/app_utilities.dart';
+import 'package:neom_commons/utils/constants/app_page_id_constants.dart';
+import 'package:neom_commons/utils/constants/app_translation_constants.dart';
+import 'package:neom_commons/utils/constants/message_translation_constants.dart';
+import 'package:neom_core/app_config.dart';
+import 'package:neom_core/data/firestore/chamber_firestore.dart';
+import 'package:neom_core/data/implementations/user_controller.dart';
+import 'package:neom_core/domain/model/app_profile.dart';
+import 'package:neom_core/domain/model/band.dart';
+import 'package:neom_core/domain/model/neom/chamber.dart';
+import 'package:neom_core/domain/use_cases/chamber_service.dart';
+import 'package:neom_core/utils/constants/app_route_constants.dart';
+import 'package:neom_core/utils/enums/owner_type.dart';
 
 
 

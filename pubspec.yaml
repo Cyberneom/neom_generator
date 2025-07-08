@@ -18,9 +18,6 @@ dependencies:
   neom_commons:
     git:
       url: git@github.com:Cyberneom/neom_commons.git
-  neom_frequencies:
-    git:
-      url: git@github.com:Cyberneom/neom_frequencies.git
 
 #  FUTURE EXPERIMENTAL USE:
 #  neom_vr:
