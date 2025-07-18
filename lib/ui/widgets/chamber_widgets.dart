@@ -9,7 +9,8 @@ import 'package:neom_commons/ui/widgets/handled_cached_network_image.dart';
 import 'package:neom_commons/ui/widgets/rating_heart_bar.dart';
 import 'package:neom_commons/utils/app_alerts.dart';
 import 'package:neom_commons/utils/constants/app_constants.dart';
-import 'package:neom_commons/utils/constants/app_translation_constants.dart';
+import 'package:neom_commons/utils/constants/translations/app_translation_constants.dart';
+import 'package:neom_commons/utils/constants/translations/common_translation_constants.dart';
 import 'package:neom_core/app_config.dart';
 import 'package:neom_core/app_properties.dart';
 import 'package:neom_core/domain/model/neom/chamber.dart';
@@ -76,7 +77,7 @@ Widget buildChamberList(BuildContext context, ChamberController _) {
               context: context,
               builder: (ctx) => AlertDialog(
             backgroundColor: AppColor.main75,
-            title: Text(AppTranslationConstants.itemlistName.tr,),
+            title: Text(CommonTranslationConstants.itemlistName.tr,),
             content: SizedBox(
               height: AppTheme.fullHeight(context)*0.25,
               child: Obx(()=> _.isLoading.value ? const Center(child: CircularProgressIndicator())
@@ -122,8 +123,8 @@ Widget buildChamberList(BuildContext context, ChamberController _) {
                 onPressed: () async {
                   if(_.chambers.length == 1) {
                     AppAlerts.showAlert(context,
-                        title: AppTranslationConstants.itemlistPrefs.tr,
-                        message: AppTranslationConstants.cantRemoveMainItemlist.tr);
+                        title: CommonTranslationConstants.itemlistPrefs.tr,
+                        message: CommonTranslationConstants.cantRemoveMainItemlist.tr);
                   } else {
                     await _.deleteChamber(chamber);
                     Navigator.pop(ctx);
@@ -184,7 +185,7 @@ Widget buildPresetsList(BuildContext context, ChamberPresetController _) {
           },
           onLongPress: () => _.chamber.isModifiable && (AppConfig.instance.appInUse != AppInUse.c || !_.isFixed) ? Alert(
               context: context,
-              title: AppTranslationConstants.appItemPrefs.tr,
+              title: CommonTranslationConstants.appItemPrefs.tr,
               style: AlertStyle(
                   backgroundColor: AppColor.main50,
                   titleStyle: const TextStyle(color: Colors.white)

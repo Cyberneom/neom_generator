@@ -6,7 +6,8 @@ import 'package:flutter_sound/flutter_sound.dart';
 import 'package:get/get.dart';
 import 'package:neom_commons/utils/app_utilities.dart';
 import 'package:neom_commons/utils/constants/app_page_id_constants.dart';
-import 'package:neom_commons/utils/constants/app_translation_constants.dart';
+import 'package:neom_commons/utils/constants/translations/app_translation_constants.dart';
+import 'package:neom_commons/utils/constants/translations/common_translation_constants.dart';
 import 'package:neom_core/app_config.dart';
 import 'package:neom_core/app_properties.dart';
 import 'package:neom_core/data/firestore/chamber_firestore.dart';
@@ -27,12 +28,12 @@ import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 
 import '../domain/use_cases/neom_generator_service.dart';
+import '../utils.constants/generator_translation_constants.dart';
 import '../utils.constants/neom_generator_constants.dart';
 
 class NeomGeneratorController extends GetxController implements NeomGeneratorService {
 
   final userController = Get.find<UserController>();
-
   final frequencyServiceImpl = Get.find<FrequencyService>();
 
   ///EXPERIMENTAL
@@ -281,8 +282,8 @@ class NeomGeneratorController extends GetxController implements NeomGeneratorSer
       if(frequencyPracticeState > 0) frequencyState.value = frequencyPracticeState;
 
       if(noChambers) {
-        chamber.value.name = AppTranslationConstants.myFavItemlistName.tr;
-        chamber.value.description = AppTranslationConstants.myFavItemlistDesc.tr;
+        chamber.value.name = CommonTranslationConstants.myFavItemlistName.tr;
+        chamber.value.description = CommonTranslationConstants.myFavItemlistDesc.tr;
         chamber.value.imgUrl = AppProperties.getAppLogoUrl();
         chamber.value.ownerId = profile.id;
         chamber.value.id = await ChamberFirestore().insert(chamber.value);
@@ -355,13 +356,13 @@ class NeomGeneratorController extends GetxController implements NeomGeneratorSer
         } catch (e) {
           AppConfig.logger.e(e.toString());
           AppUtilities.showSnackBar(
-              title: AppTranslationConstants.neomChamber.tr,
+              title: ChamberTranslationConstants.neomChamber.tr,
               message: 'Algo salió mal eliminando tu preset de tu cámara Neom.'
           );
         }
 
         AppUtilities.showSnackBar(
-            title: AppTranslationConstants.neomChamber.tr,
+            title: ChamberTranslationConstants.neomChamber.tr,
             message: 'El preajuste para la frecuencia de "${chamberPreset.neomFrequency!.frequency.ceilToDouble().toString()}"'
                 ' Hz fue removido de la Cámara Neom: ${chamber.value.name} satisfactoriamente.'
         );

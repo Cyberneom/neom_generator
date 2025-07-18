@@ -13,8 +13,9 @@ import 'package:neom_commons/ui/widgets/read_more_container.dart';
 import 'package:neom_commons/utils/app_utilities.dart';
 import 'package:neom_commons/utils/constants/app_assets.dart';
 import 'package:neom_commons/utils/constants/app_page_id_constants.dart';
-import 'package:neom_commons/utils/constants/app_translation_constants.dart';
-import 'package:neom_commons/utils/constants/message_translation_constants.dart';
+import 'package:neom_commons/utils/constants/translations/app_translation_constants.dart';
+import 'package:neom_commons/utils/constants/translations/common_translation_constants.dart';
+import 'package:neom_commons/utils/constants/translations/message_translation_constants.dart';
 import 'package:neom_core/app_config.dart';
 import 'package:neom_core/utils/core_utilities.dart';
 import 'package:neom_core/utils/enums/app_item_state.dart';
@@ -22,6 +23,7 @@ import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:sleek_circular_slider/sleek_circular_slider.dart';
 import 'package:surround_frequency_generator/surround_frequency_generator.dart';
 
+import '../utils.constants/generator_translation_constants.dart';
 import '../utils.constants/neom_generator_constants.dart';
 import '../utils.constants/neom_slider_constants.dart';
 import 'neom_generator_controller.dart';
@@ -57,7 +59,7 @@ class NeomGeneratorPage extends StatelessWidget {
           return true;
         },
     child: Scaffold(
-      appBar: AppBarChild(title: AppTranslationConstants.neomChamber.tr),
+      appBar: AppBarChild(title: ChamberTranslationConstants.neomChamber.tr),
         body: Container(
         height: AppTheme.fullHeight(context),
         width: AppTheme.fullWidth(context),
@@ -178,13 +180,13 @@ class NeomGeneratorPage extends StatelessWidget {
                     children: [
                       Text("${AppTranslationConstants.volume.tr}: ${(_.soundController.value.volume*100).round()}"),
                       Text(
-                          "${AppTranslationConstants.waveLength.tr}: ${_.soundController.value.freq > 0 ? ((343 / _.soundController.value.freq) * 100).toStringAsFixed(2) : 'N/A'} cm"
+                          "${ChamberTranslationConstants.waveLength.tr}: ${_.soundController.value.freq > 0 ? ((343 / _.soundController.value.freq) * 100).toStringAsFixed(2) : 'N/A'} cm"
                       ),
                     ],
                   ),
                   AppTheme.heightSpace10,
                   Text(
-                    AppTranslationConstants.surroundSound.tr.capitalizeFirst,
+                    ChamberTranslationConstants.surroundSound.tr.capitalizeFirst,
                     style: const TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: 15,
@@ -194,9 +196,9 @@ class NeomGeneratorPage extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      Text("${AppTranslationConstants.xAxis.tr}: ${_.soundController.value.x.toPrecision(2)}"),
-                      Text("${AppTranslationConstants.yAxis.tr}: ${_.soundController.value.y.toPrecision(2)}"),
-                      Text("${AppTranslationConstants.zAxis.tr}: ${_.soundController.value.z.toPrecision(2)}"),
+                      Text("${ChamberTranslationConstants.xAxis.tr}: ${_.soundController.value.x.toPrecision(2)}"),
+                      Text("${ChamberTranslationConstants.yAxis.tr}: ${_.soundController.value.y.toPrecision(2)}"),
+                      Text("${ChamberTranslationConstants.zAxis.tr}: ${_.soundController.value.z.toPrecision(2)}"),
                     ],
                   ),
                   AppTheme.heightSpace20,
@@ -219,7 +221,7 @@ class NeomGeneratorPage extends StatelessWidget {
                             padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
                             backgroundColor: AppColor.bondiBlue,
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),),
-                          child: Text(_.isUpdate.value ? AppTranslationConstants.savePreset.tr : _.existsInChamber.value ? AppTranslationConstants.removePreset.tr : AppTranslationConstants.savePreset.tr,
+                          child: Text(_.isUpdate.value ? ChamberTranslationConstants.savePreset.tr : _.existsInChamber.value ? ChamberTranslationConstants.removePreset.tr : ChamberTranslationConstants.savePreset.tr,
                               style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 18.0,
@@ -236,7 +238,7 @@ class NeomGeneratorPage extends StatelessWidget {
                                     backgroundColor: AppColor.main50,
                                     titleStyle: const TextStyle(color: Colors.white)
                                 ),
-                                title: AppTranslationConstants.chamberPrefs.tr,
+                                title: ChamberTranslationConstants.chamberPrefs.tr,
                                 content: Column(
                                   children: <Widget>[
                                     Obx(()=>
@@ -302,7 +304,7 @@ class NeomGeneratorPage extends StatelessWidget {
                                         Navigator.pop(context);
                                       } else {
                                         Get.snackbar(
-                                            AppTranslationConstants.appItemPrefs.tr,
+                                            CommonTranslationConstants.appItemPrefs.tr,
                                             MessageTranslationConstants.selectItemStateMsg.tr,
                                             snackPosition: SnackPosition.bottom
                                         );
@@ -364,7 +366,7 @@ class NeomGeneratorPage extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: _.isRecording || _.frequencyDescription.isEmpty ? Text(
                       _.isRecording ? "${AppTranslationConstants.frequency.tr}: ${_.detectedFrequency.toInt()} Hz"
-                  : _.detectedFrequency == 0 ? AppTranslationConstants.findsYourVoiceFrequency.tr : '',
+                  : _.detectedFrequency == 0 ? ChamberTranslationConstants.findsYourVoiceFrequency.tr : '',
                       style: TextStyle(fontSize: _.isRecording ? 18 : 15,),
                       textAlign: TextAlign.justify,
                     ) : ReadMoreContainer(

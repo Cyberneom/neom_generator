@@ -5,8 +5,8 @@ homepage: https://github.com/Cyberneom/neom_generator
 publish_to: 'none'
 
 environment:
-  sdk: ">=3.0.0 <4.0.0"
-  flutter: ">=1.17.0"
+  sdk: ">=3.4.0 <4.0.0"
+  flutter: ">=3.19.0"
 
 dependencies:
   flutter:
@@ -36,13 +36,6 @@ dependencies:
   #Tonic is a Flutter-compatible Dart package that models components of music theory.
   #Used for Neom Harmony
   #tonic: ^0.2.4
-
-  #Virtual Reality Experimental
-  #  flutter_custom_tabs: 2.1.0
-  #  vr_player: ^0.2.0
-  #  panorama: ^0.4.1
-  #  video_360: ^0.0.8
-  #  split_view: ^3.2.1
 
 dev_dependencies:
   flutter_test:

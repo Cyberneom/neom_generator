@@ -5,7 +5,7 @@ import 'package:neom_commons/ui/theme/app_theme.dart';
 import 'package:neom_commons/ui/widgets/appbar_child.dart';
 import 'package:neom_commons/utils/constants/app_constants.dart';
 import 'package:neom_commons/utils/constants/app_page_id_constants.dart';
-import 'package:neom_commons/utils/constants/app_translation_constants.dart';
+import 'package:neom_commons/utils/constants/translations/common_translation_constants.dart';
 import 'package:neom_core/utils/constants/app_route_constants.dart';
 import 'package:neom_core/utils/enums/media_search_type.dart';
 
@@ -34,7 +34,7 @@ class ChamberPresetsPage extends StatelessWidget {
         ),
         floatingActionButton: _.isFixed || !_.chamber.isModifiable ? const SizedBox.shrink()
             : FloatingActionButton(
-          tooltip: AppTranslationConstants.addItem.tr,
+          tooltip: CommonTranslationConstants.addItem.tr,
           onPressed: ()=> {
             Get.toNamed(AppRouteConstants.itemSearch,
                 arguments: [MediaSearchType.song, _.chamber])

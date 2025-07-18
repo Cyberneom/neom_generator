@@ -1,7 +1,6 @@
 import 'package:get/get.dart';
 import 'package:neom_commons/app_flavour.dart';
 import 'package:neom_commons/utils/constants/app_page_id_constants.dart';
-import 'package:neom_commons/utils/constants/app_translation_constants.dart';
 import 'package:neom_core/app_config.dart';
 import 'package:neom_core/data/api_services/push_notification/firebase_messaging_calls.dart';
 import 'package:neom_core/data/firestore/chamber_firestore.dart';
@@ -15,6 +14,7 @@ import 'package:neom_core/utils/enums/owner_type.dart';
 import 'package:neom_core/utils/enums/push_notification_type.dart';
 
 import '../../domain/use_cases/chamber_preset_service.dart';
+import '../../utils.constants/generator_translation_constants.dart';
 
 class ChamberPresetController extends GetxController implements ChamberPresetService {
 
@@ -144,7 +144,7 @@ class ChamberPresetController extends GetxController implements ChamberPresetSer
               fromProfile: userController.profile,
               notificationType: PushNotificationType.chamberPresetAdded,
               toProfileId: '',
-              title: AppTranslationConstants.chamberPresetAdded,
+              title: ChamberTranslationConstants.chamberPresetAdded,
               referenceId: chamberPreset.id,
               imgUrl: chamberPreset.imgUrl
           );

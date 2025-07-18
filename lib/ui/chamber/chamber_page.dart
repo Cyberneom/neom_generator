@@ -5,10 +5,12 @@ import 'package:neom_commons/ui/theme/app_color.dart';
 import 'package:neom_commons/ui/theme/app_theme.dart';
 import 'package:neom_commons/ui/widgets/appbar_child.dart';
 import 'package:neom_commons/utils/constants/app_page_id_constants.dart';
-import 'package:neom_commons/utils/constants/app_translation_constants.dart';
+import 'package:neom_commons/utils/constants/translations/app_translation_constants.dart';
+import 'package:neom_commons/utils/constants/translations/common_translation_constants.dart';
 import 'package:neom_core/utils/enums/owner_type.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 
+import '../../utils.constants/generator_translation_constants.dart';
 import '../widgets/chamber_widgets.dart';
 import 'chamber_controller.dart';
 
@@ -30,7 +32,7 @@ class ChamberPage extends StatelessWidget {
             : Column(
               children: [
                 ListTile(
-                  title: Text(AppTranslationConstants.createItemlist.tr),
+                  title: Text(ChamberTranslationConstants.createPresetList.tr),
                   leading: SizedBox.square(
                     dimension: 40,
                     child: Center(
@@ -45,7 +47,7 @@ class ChamberPage extends StatelessWidget {
                       context: context,
                       builder: (ctx) => AlertDialog(
                         backgroundColor: AppColor.main75,
-                        title: Text(AppTranslationConstants.addNewItemlist.tr,),
+                        title: Text(CommonTranslationConstants.addNewItemlist.tr,),
                         content: Obx(() => SizedBox(
                           height: AppTheme.fullHeight(context)*0.3,
                           child: Column(
@@ -55,7 +57,7 @@ class ChamberPage extends StatelessWidget {
                               TextField(
                                 controller: _.newChamberNameController,
                                 decoration: InputDecoration(
-                                  labelText: AppTranslationConstants.itemlistName.tr,
+                                  labelText: CommonTranslationConstants.itemlistName.tr,
                                 ),
                               ),
                               TextField(

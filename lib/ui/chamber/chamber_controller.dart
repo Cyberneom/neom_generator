@@ -3,8 +3,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:neom_commons/utils/app_utilities.dart';
 import 'package:neom_commons/utils/constants/app_page_id_constants.dart';
-import 'package:neom_commons/utils/constants/app_translation_constants.dart';
-import 'package:neom_commons/utils/constants/message_translation_constants.dart';
+import 'package:neom_commons/utils/constants/translations/common_translation_constants.dart';
+import 'package:neom_commons/utils/constants/translations/message_translation_constants.dart';
 import 'package:neom_core/app_config.dart';
 import 'package:neom_core/data/firestore/chamber_firestore.dart';
 import 'package:neom_core/data/implementations/user_controller.dart';
@@ -14,6 +14,8 @@ import 'package:neom_core/domain/model/neom/chamber.dart';
 import 'package:neom_core/domain/use_cases/chamber_service.dart';
 import 'package:neom_core/utils/constants/app_route_constants.dart';
 import 'package:neom_core/utils/enums/owner_type.dart';
+
+import '../../utils.constants/generator_translation_constants.dart';
 
 
 
@@ -144,8 +146,8 @@ class ChamberController extends GetxController implements ChamberService {
           logger.t("Itemlists $chambers");
           clearNewChamber();
           AppUtilities.showSnackBar(
-              title: AppTranslationConstants.chamberPrefs.tr,
-              message: AppTranslationConstants.chamberCreated.tr
+              title: ChamberTranslationConstants.chamberPrefs.tr,
+              message: ChamberTranslationConstants.chamberCreated.tr
           );
         } else {
           logger.d("Something happens trying to insert chamber");
@@ -156,7 +158,7 @@ class ChamberController extends GetxController implements ChamberService {
             : MessageTranslationConstants.pleaseAddDescription;
 
         AppUtilities.showSnackBar(
-          title: MessageTranslationConstants.addNewItemlist.tr,
+          title: CommonTranslationConstants.addNewItemlist.tr,
           message: MessageTranslationConstants.pleaseFillItemlistInfo.tr,
         );
       }
@@ -180,13 +182,13 @@ class ChamberController extends GetxController implements ChamberService {
 
         chambers.remove(chamber.id);
         AppUtilities.showSnackBar(
-          title: AppTranslationConstants.itemlistPrefs.tr,
-          message: AppTranslationConstants.itemlistRemoved.tr
+          title: CommonTranslationConstants.itemlistPrefs.tr,
+          message: CommonTranslationConstants.itemlistRemoved.tr
         );
       } else {
         AppUtilities.showSnackBar(
-            title: AppTranslationConstants.itemlistPrefs.tr,
-            message: AppTranslationConstants.itemlistRemovedErrorMsg.tr
+            title: CommonTranslationConstants.itemlistPrefs.tr,
+            message: CommonTranslationConstants.itemlistRemovedErrorMsg.tr
         );
         logger.e("Something happens trying to remove itemlist");
       }
@@ -226,27 +228,27 @@ class ChamberController extends GetxController implements ChamberService {
           chambers[itemlist.id] = itemlist;
           clearNewChamber();
           AppUtilities.showSnackBar(
-              title: AppTranslationConstants.itemlistPrefs.tr,
-              message: AppTranslationConstants.itemlistUpdated.tr
+              title: CommonTranslationConstants.itemlistPrefs.tr,
+              message: CommonTranslationConstants.itemlistUpdated.tr
           );
         } else {
           logger.i("Something happens trying to update itemlist");
           AppUtilities.showSnackBar(
-              title: AppTranslationConstants.itemlistPrefs.tr,
-              message: AppTranslationConstants.itemlistUpdatedErrorMsg.tr
+              title: CommonTranslationConstants.itemlistPrefs.tr,
+              message: CommonTranslationConstants.itemlistUpdatedErrorMsg.tr
           );
         }
       } else {
         AppUtilities.showSnackBar(
-            title: AppTranslationConstants.itemlistPrefs.tr,
-            message: AppTranslationConstants.itemlistUpdateSameInfo.tr
+            title: CommonTranslationConstants.itemlistPrefs.tr,
+            message: CommonTranslationConstants.itemlistUpdateSameInfo.tr
         );
       }
     } catch (e) {
       logger.e(e.toString());
       AppUtilities.showSnackBar(
-          title: AppTranslationConstants.itemlistPrefs.tr,
-          message: AppTranslationConstants.itemlistUpdatedErrorMsg.tr
+          title: CommonTranslationConstants.itemlistPrefs.tr,
+          message: CommonTranslationConstants.itemlistUpdatedErrorMsg.tr
       );
     }
 
