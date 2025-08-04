@@ -1,4 +1,4 @@
-## 1.3.0 - Architectural Enhancements and Refactoring:
+## 1.3.0-dev - Architectural Enhancements and Refactoring:
 
 Translation Constants Modularization:
 
