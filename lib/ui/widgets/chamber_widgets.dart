@@ -26,13 +26,13 @@ import 'package:rflutter_alert/rflutter_alert.dart';
 import '../chamber/chamber_controller.dart';
 import '../chamber/chamber_preset_controller.dart';
 
-Widget buildChamberList(BuildContext context, ChamberController _) {
+Widget buildChamberList(BuildContext context, ChamberController chamberController) {
   return ListView.separated(
     separatorBuilder: (context, index) => const Divider(),
-    itemCount: _.chambers.length,
+    itemCount: chamberController.chambers.length,
     shrinkWrap: true,
     itemBuilder: (context, index) {
-      Chamber chamber = _.chambers.values.elementAt(index);
+      Chamber chamber = chamberController.chambers.values.elementAt(index);
       return ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 10),
         leading: SizedBox(
@@ -58,10 +58,10 @@ Widget buildChamberList(BuildContext context, ChamberController _) {
           ),
           label: Icon(AppFlavour.getAppItemIcon(), color: AppColor.white80),
           onPressed: () async {
-            await _.gotoChamberPresets(chamber);
+            await chamberController.gotoChamberPresets(chamber);
             ///ADD CHAMBERPRESET SEARCH HERE
             // if(!chamber.isModifiable) {
-            //   await _.gotoChamberPresets(chamber);
+            //   await chamberController.gotoChamberPresets(chamber);
             // } else {
             //   Get.toNamed(AppRouteConstants.itemSearch,
             //       arguments: [SpotifySearchType.song, chamber]
@@ -70,7 +70,7 @@ Widget buildChamberList(BuildContext context, ChamberController _) {
           },
         ),
         onTap: () async {
-          await _.gotoChamberPresets(chamber);
+          await chamberController.gotoChamberPresets(chamber);
         },
         onLongPress: () async {
           (await showDialog(
@@ -80,19 +80,19 @@ Widget buildChamberList(BuildContext context, ChamberController _) {
             title: Text(CommonTranslationConstants.itemlistName.tr,),
             content: SizedBox(
               height: AppTheme.fullHeight(context)*0.25,
-              child: Obx(()=> _.isLoading.value ? const Center(child: CircularProgressIndicator())
+              child: Obx(()=> chamberController.isLoading.value ? const Center(child: CircularProgressIndicator())
                 : Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     TextField(
-                      controller: _.newChamberNameController,
+                      controller: chamberController.newChamberNameController,
                       decoration: InputDecoration(
                         labelText: '${AppTranslationConstants.changeName.tr}: ',
                         hintText: chamber.name,
                       ),
                     ),
                     TextField(
-                      controller: _.newChamberDescController,
+                      controller: chamberController.newChamberDescController,
                       minLines: 2,
                       maxLines: 5,
                       decoration: InputDecoration(
@@ -108,7 +108,7 @@ Widget buildChamberList(BuildContext context, ChamberController _) {
               DialogButton(
                 color: AppColor.bondiBlue75,
                 onPressed: () async {
-                  await _.updateChamber(chamber.id, chamber);
+                  await chamberController.updateChamber(chamber.id, chamber);
                   Navigator.pop(ctx);
                 },
                 child: Text(AppTranslationConstants.update.tr,
@@ -121,12 +121,12 @@ Widget buildChamberList(BuildContext context, ChamberController _) {
                   style: const TextStyle(fontSize: 14),
                 ),
                 onPressed: () async {
-                  if(_.chambers.length == 1) {
+                  if(chamberController.chambers.length == 1) {
                     AppAlerts.showAlert(context,
                         title: CommonTranslationConstants.itemlistPrefs.tr,
                         message: CommonTranslationConstants.cantRemoveMainItemlist.tr);
                   } else {
-                    await _.deleteChamber(chamber);
+                    await chamberController.deleteChamber(chamber);
                     Navigator.pop(ctx);
                   }
                 },
@@ -140,15 +140,15 @@ Widget buildChamberList(BuildContext context, ChamberController _) {
   );
 }
 
-Widget buildPresetsList(BuildContext context, ChamberPresetController _) {
+Widget buildPresetsList(BuildContext context, ChamberPresetController presetController) {
   return ListView.separated(
     separatorBuilder: (context, index) => const Divider(),
-    itemCount: _.chamberPresets.length,
+    itemCount: presetController.chamberPresets.length,
     itemBuilder: (context, index) {
-      ChamberPreset chamberPreset = _.chamberPresets.values.elementAt(index);
+      ChamberPreset chamberPreset = presetController.chamberPresets.values.elementAt(index);
       return ListTile(
           leading: HandledCachedNetworkImage(chamberPreset.imgUrl.isNotEmpty
-              ? chamberPreset.imgUrl : _.chamber.imgUrl, enableFullScreen: false,
+              ? chamberPreset.imgUrl : presetController.chamber.imgUrl, enableFullScreen: false,
             width: 40,
           ),
           title: Row(
@@ -159,7 +159,7 @@ Widget buildPresetsList(BuildContext context, ChamberPresetController _) {
                     ? "${chamberPreset.name.substring(0,AppConstants.maxAppItemNameLength)}..."
                     : chamberPreset.name),
                 const SizedBox(width:5),
-                (AppConfig.instance.appInUse == AppInUse.c || (_.userServiceImpl.profile.type == ProfileType.appArtist && !_.isFixed)) ?
+                (AppConfig.instance.appInUse == AppInUse.c || (presetController.userServiceImpl.profile.type == ProfileType.appArtist && !presetController.isFixed)) ?
                 RatingHeartBar(state: chamberPreset.state.toDouble()) : const SizedBox.shrink(),
               ]
           ),
@@ -171,19 +171,19 @@ Widget buildPresetsList(BuildContext context, ChamberPresetController _) {
               padding: EdgeInsets.zero,
               constraints: const BoxConstraints(),
               onPressed: () {
-                ChamberPreset preset = _.chamber.chamberPresets!.firstWhere((element) => element.id == chamberPreset.id);
+                ChamberPreset preset = presetController.chamber.chamberPresets!.firstWhere((element) => element.id == chamberPreset.id);
                 Get.toNamed(AppRouteConstants.generator,  arguments: [preset.clone()]);
               }
           ),
           onTap: () {
-            if(!_.isFixed) {
-              _.getChamberPresetDetails(chamberPreset);
+            if(!presetController.isFixed) {
+              presetController.getChamberPresetDetails(chamberPreset);
             } else {
-              ChamberPreset preset = _.chamber.chamberPresets!.firstWhere((element) => element.id == chamberPreset.id);
+              ChamberPreset preset = presetController.chamber.chamberPresets!.firstWhere((element) => element.id == chamberPreset.id);
               Get.toNamed(AppRouteConstants.generator,  arguments: [preset.clone()]);
             }
           },
-          onLongPress: () => _.chamber.isModifiable && (AppConfig.instance.appInUse != AppInUse.c || !_.isFixed) ? Alert(
+          onLongPress: () => presetController.chamber.isModifiable && (AppConfig.instance.appInUse != AppInUse.c || !presetController.isFixed) ? Alert(
               context: context,
               title: CommonTranslationConstants.appItemPrefs.tr,
               style: AlertStyle(
@@ -209,9 +209,9 @@ Widget buildPresetsList(BuildContext context, ChamberPresetController _) {
                           );
                         }).toList(),
                         onChanged: (String? newItemState) {
-                          _.setChamberPresetState(EnumToString.fromString(ChamberPresetState.values, newItemState!) ?? ChamberPresetState.noState);
+                          presetController.setChamberPresetState(EnumToString.fromString(ChamberPresetState.values, newItemState!) ?? ChamberPresetState.noState);
                         },
-                        value: CoreUtilities.getItemState(_.itemState.value).name,
+                        value: CoreUtilities.getItemState(presetController.itemState.value).name,
                         icon: const Icon(Icons.arrow_downward),
                         iconSize: 15,
                         elevation: 15,
@@ -232,7 +232,7 @@ Widget buildPresetsList(BuildContext context, ChamberPresetController _) {
                     style: const TextStyle(fontSize: 15),
                   ),
                   onPressed: () => {
-                    _.updateChamberPreset(chamberPreset)
+                    presetController.updateChamberPreset(chamberPreset)
                   },
                 ),
                 DialogButton(
@@ -241,7 +241,7 @@ Widget buildPresetsList(BuildContext context, ChamberPresetController _) {
                     style: const TextStyle(fontSize: 15),
                   ),
                   onPressed: () async => {
-                    await _.removePresetFromChamber(chamberPreset)
+                    await presetController.removePresetFromChamber(chamberPreset)
                   },
                 ),
               ]
@@ -249,4 +249,5 @@ Widget buildPresetsList(BuildContext context, ChamberPresetController _) {
       );
     },
   );
+
 }

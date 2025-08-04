@@ -22,13 +22,13 @@ class ChamberPage extends StatelessWidget {
     return GetBuilder<ChamberController>(
         id: AppPageIdConstants.chamber,
         init: ChamberController(),
-        builder: (_) => Scaffold(
+        builder: (chamberController) => Scaffold(
           backgroundColor: AppColor.main75,
           appBar: AppBarChild(title: AppTranslationConstants.presets.tr,),
           body: Container(
             decoration: AppTheme.appBoxDecoration,
-            padding: EdgeInsets.only(bottom: _.ownerType == OwnerType.profile ? 80 : 0),
-            child: _.isLoading.value ? const Center(child: CircularProgressIndicator())
+            padding: EdgeInsets.only(bottom: chamberController.ownerType == OwnerType.profile ? 80 : 0),
+            child: chamberController.isLoading.value ? const Center(child: CircularProgressIndicator())
             : Column(
               children: [
                 ListTile(
@@ -55,13 +55,13 @@ class ChamberPage extends StatelessWidget {
                             children: <Widget>[
                               //TODO Change lines colors to white.
                               TextField(
-                                controller: _.newChamberNameController,
+                                controller: chamberController.newChamberNameController,
                                 decoration: InputDecoration(
                                   labelText: CommonTranslationConstants.itemlistName.tr,
                                 ),
                               ),
                               TextField(
-                                controller: _.newChamberDescController,
+                                controller: chamberController.newChamberDescController,
                                 minLines: 2,
                                 maxLines: 5,
                                 decoration: InputDecoration(
@@ -75,20 +75,20 @@ class ChamberPage extends StatelessWidget {
                                   child: Row(
                                     children: <Widget>[
                                       Checkbox(
-                                        value: _.isPublicNewChamber.value,
-                                        onChanged: (bool? newValue) => _.setPrivacyOption(),
+                                        value: chamberController.isPublicNewChamber.value,
+                                        onChanged: (bool? newValue) => chamberController.setPrivacyOption(),
                                       ),
                                       Text(AppTranslationConstants.publicList.tr, style: const TextStyle(fontSize: 15)),
                                     ],
                                   ),
-                                  onTap: () => _.setPrivacyOption(),
+                                  onTap: () => chamberController.setPrivacyOption(),
                                 ),
                               ),
-                              _.errorMsg.isNotEmpty ? Column(
+                              chamberController.errorMsg.isNotEmpty ? Column(
                                 children: [
                                   Align(
                                     alignment: Alignment.center,
-                                    child: Text(_.errorMsg.value.tr, style: const TextStyle(fontSize: 12, color: AppColor.red)),
+                                    child: Text(chamberController.errorMsg.value.tr, style: const TextStyle(fontSize: 12, color: AppColor.red)),
                                   ),
                                 ],) : const SizedBox.shrink()
                             ],
@@ -99,8 +99,8 @@ class ChamberPage extends StatelessWidget {
                             height: 50,
                             color: AppColor.bondiBlue75,
                             onPressed: () async {
-                              await _.createChamber();
-                              if(_.errorMsg.value.isEmpty) Navigator.pop(ctx);
+                              await chamberController.createChamber();
+                              if(chamberController.errorMsg.value.isEmpty) Navigator.pop(ctx);
                             },
                             child: Text(
                               AppTranslationConstants.add.tr,
@@ -113,12 +113,12 @@ class ChamberPage extends StatelessWidget {
                   },
                 ),
                 Expanded(
-                  child: buildChamberList(context, _),
+                  child: buildChamberList(context, chamberController),
                 ),
               ],
             )
           ),
-        //   floatingActionButton: _.isLoading.value ? const SizedBox.shrink() : Container(
+        //   floatingActionButton: chamberController.isLoading.value ? const SizedBox.shrink() : Container(
         //     margin: const EdgeInsets.only(bottom: 0),
         //     child: Column(
         //       crossAxisAlignment: CrossAxisAlignment.end,
@@ -160,7 +160,7 @@ class ChamberPage extends StatelessWidget {
         //             ),
         //           ],
         //         ),
-        //         if(_.ownerType == OwnerType.profile) AppTheme.heightSpace75,
+        //         if(chamberController.ownerType == OwnerType.profile) AppTheme.heightSpace75,
         //       ]
         //   ),
         // ),

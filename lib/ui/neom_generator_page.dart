@@ -39,23 +39,23 @@ class NeomGeneratorPage extends StatelessWidget {
     return GetBuilder<NeomGeneratorController>(
       id: AppPageIdConstants.generator,
       init: NeomGeneratorController(),
-      builder: (_) => WillPopScope(
+      builder: (generatorController) => WillPopScope(
         onWillPop: () async {
           try {
-            if(_.isPlaying.value) {
-              await _.playStopPreview(stopPreview: true);
+            if(generatorController.isPlaying.value) {
+              await generatorController.playStopPreview(stopPreview: true);
             }
-            _.soundController.removeListener(() { });
-            _.soundController.dispose();
-            _.soundController = SoundController();
+            generatorController.soundController.removeListener(() { });
+            generatorController.soundController.dispose();
+            generatorController.soundController = SoundController();
             if(Platform.isAndroid) {
-              await _.webViewAndroidController.clearCache(); // Clear the WebView cache (optional)
-              await _.webViewAndroidController.goBack();    // Dispose of the WebView
+              await generatorController.webViewAndroidController.clearCache(); // Clear the WebView cache (optional)
+              await generatorController.webViewAndroidController.goBack();    // Dispose of the WebView
             } else {
-              await _.webViewIosController.clearCache();
-              await _.webViewIosController.goBack();
+              await generatorController.webViewIosController.clearCache();
+              await generatorController.webViewIosController.goBack();
             }
-            _.isPlaying.value = false;
+            generatorController.isPlaying.value = false;
           } catch (e) {
             AppConfig.logger.e(e.toString());
           }
@@ -71,25 +71,25 @@ class NeomGeneratorPage extends StatelessWidget {
           child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          SoundWidget(soundController: _.soundController,
-            webViewAndroidController: _.webViewAndroidController,
-            webViewIosController: _.webViewIosController,
+          SoundWidget(soundController: generatorController.soundController,
+            webViewAndroidController: generatorController.webViewAndroidController,
+            webViewIosController: generatorController.webViewIosController,
             backgroundColor: AppColor.getMain(),
           ),
           AppTheme.heightSpace40,
           ValueListenableBuilder<AudioParam>(
-            valueListenable: _.soundController,
+            valueListenable: generatorController.soundController,
             builder: (context, AudioParam freqValue, __) {
-              AudioParam freqValue = _.getAudioParam();
+              AudioParam freqValue = generatorController.getAudioParam();
               return Column(
                 children: <Widget>[
                   SleekCircularSlider(
                     appearance: NeomSliderConstants.appearance01,
                     min: NeomGeneratorConstants.frequencyMin,
                     max: NeomGeneratorConstants.frequencyMax,
-                    initialValue: _.chamberPreset.neomFrequency!.frequency,
+                    initialValue: generatorController.chamberPreset.neomFrequency!.frequency,
                     onChange: (double val) async {
-                      await _.setFrequency(val);
+                      await generatorController.setFrequency(val);
                     },
                     innerWidget: (double value) {
                       return Align(
@@ -100,7 +100,7 @@ class NeomGeneratorPage extends StatelessWidget {
                           max: NeomGeneratorConstants.positionMax,
                           initialValue: freqValue.x,
                           onChange: (double val) {
-                            _.setParameterPosition(x: val, y: freqValue.y, z: freqValue.z);
+                            generatorController.setParameterPosition(x: val, y: freqValue.y, z: freqValue.z);
                           },
                           innerWidget: (double v) {
                             return Align(
@@ -111,7 +111,7 @@ class NeomGeneratorPage extends StatelessWidget {
                                 max: NeomGeneratorConstants.positionMax,
                                 initialValue: freqValue.y,
                                 onChange: (double val) {
-                                  _.setParameterPosition(x: freqValue.x, y: val, z: freqValue.z);
+                                  generatorController.setParameterPosition(x: freqValue.x, y: val, z: freqValue.z);
                                 },
                                 innerWidget: (double v) {
                                   return Align(
@@ -122,20 +122,20 @@ class NeomGeneratorPage extends StatelessWidget {
                                       max: NeomGeneratorConstants.positionMax,
                                       initialValue: freqValue.z,
                                       onChange: (double val) {
-                                        _.setParameterPosition(x: freqValue.x, y: freqValue.y, z: val);
+                                        generatorController.setParameterPosition(x: freqValue.x, y: freqValue.y, z: val);
                                       },
                                       innerWidget: (double val) {
                                         return Padding(
                                           padding: const EdgeInsets.all(25),
                                           child: Ink(
                                             decoration: BoxDecoration(
-                                              color: _.isPlaying.value ? AppColor.deepDarkViolet : Colors.transparent,
+                                              color: generatorController.isPlaying.value ? AppColor.deepDarkViolet : Colors.transparent,
                                               shape: BoxShape.circle,
                                             ),
                                             child: InkWell(
                                               child: IconButton(
                                                   onPressed: ()  async {
-                                                    await _.playStopPreview();
+                                                    await generatorController.playStopPreview();
                                                   },
                                                   icon: const Icon(FontAwesomeIcons.om, size: 60)
                                               ),
@@ -158,12 +158,12 @@ class NeomGeneratorPage extends StatelessWidget {
                     min: NeomGeneratorConstants.volumeMin,
                     max: NeomGeneratorConstants.volumeMax,
                     onChanged: (val) {
-                      _.setVolume(val);
+                      generatorController.setVolume(val);
                     },
                   ),
                   AppTheme.heightSpace10,
 
-                  Text("${_.soundController.value.freq.round()} Hz",
+                  Text("${generatorController.soundController.value.freq.round()} Hz",
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 30,
@@ -181,9 +181,9 @@ class NeomGeneratorPage extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      Text("${AppTranslationConstants.volume.tr}: ${(_.soundController.value.volume*100).round()}"),
+                      Text("${AppTranslationConstants.volume.tr}: ${(generatorController.soundController.value.volume*100).round()}"),
                       Text(
-                          "${GeneratorTranslationConstants.waveLength.tr}: ${_.soundController.value.freq > 0 ? ((343 / _.soundController.value.freq) * 100).toStringAsFixed(2) : 'N/A'} cm"
+                          "${GeneratorTranslationConstants.waveLength.tr}: ${generatorController.soundController.value.freq > 0 ? ((343 / generatorController.soundController.value.freq) * 100).toStringAsFixed(2) : 'N/A'} cm"
                       ),
                     ],
                   ),
@@ -199,32 +199,32 @@ class NeomGeneratorPage extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      Text("${GeneratorTranslationConstants.xAxis.tr}: ${_.soundController.value.x.toPrecision(2)}"),
-                      Text("${GeneratorTranslationConstants.yAxis.tr}: ${_.soundController.value.y.toPrecision(2)}"),
-                      Text("${GeneratorTranslationConstants.zAxis.tr}: ${_.soundController.value.z.toPrecision(2)}"),
+                      Text("${GeneratorTranslationConstants.xAxis.tr}: ${generatorController.soundController.value.x.toPrecision(2)}"),
+                      Text("${GeneratorTranslationConstants.yAxis.tr}: ${generatorController.soundController.value.y.toPrecision(2)}"),
+                      Text("${GeneratorTranslationConstants.zAxis.tr}: ${generatorController.soundController.value.z.toPrecision(2)}"),
                     ],
                   ),
                   AppTheme.heightSpace20,
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: _.existsInChamber.value && !_.isUpdate.value ? const SizedBox.shrink() : Row(
+                    child: generatorController.existsInChamber.value && !generatorController.isUpdate.value ? const SizedBox.shrink() : Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: <Widget>[
                         GestureDetector(
-                          child: buildIconActionChip(icon: const Icon(Icons.remove), controllerFunction: () async {await _.decreaseFrequency();}),
+                          child: buildIconActionChip(icon: const Icon(Icons.remove), controllerFunction: () async {await generatorController.decreaseFrequency();}),
                           onLongPress: () {
-                            _.longPressed.value = true;
-                            _.timerDuration.value = NeomGeneratorConstants.recursiveCallTimerDuration;
-                            _.decreaseOnLongPress();
+                            generatorController.longPressed.value = true;
+                            generatorController.timerDuration.value = NeomGeneratorConstants.recursiveCallTimerDuration;
+                            generatorController.decreaseOnLongPress();
                           },
-                          onLongPressUp: () => _.longPressed.value = false,
+                          onLongPressUp: () => generatorController.longPressed.value = false,
                         ),
-                        if(_.userServiceImpl != null) TextButton(
+                        if(generatorController.userServiceImpl != null) TextButton(
                           style: TextButton.styleFrom(
                             padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
                             backgroundColor: AppColor.bondiBlue,
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),),
-                          child: Text(_.isUpdate.value ? GeneratorTranslationConstants.savePreset.tr : _.existsInChamber.value ? GeneratorTranslationConstants.removePreset.tr : GeneratorTranslationConstants.savePreset.tr,
+                          child: Text(generatorController.isUpdate.value ? GeneratorTranslationConstants.savePreset.tr : generatorController.existsInChamber.value ? GeneratorTranslationConstants.removePreset.tr : GeneratorTranslationConstants.savePreset.tr,
                               style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 18.0,
@@ -232,8 +232,8 @@ class NeomGeneratorPage extends StatelessWidget {
                               )
                           ),
                           onPressed: () async {
-                            if(_.existsInChamber.value && !_.isUpdate.value) {
-                              await _.removePreset(context);
+                            if(generatorController.existsInChamber.value && !generatorController.isUpdate.value) {
+                              await generatorController.removePreset(context);
                             } else {
                               await Alert(
                                 context: context,
@@ -278,9 +278,9 @@ class NeomGeneratorPage extends StatelessWidget {
                                             );
                                           }).toList(),
                                           onChanged: (String? newItemState) {
-                                            _.setFrequencyState(EnumToString.fromString(AppItemState.values, newItemState!) ?? AppItemState.noState);
+                                            generatorController.setFrequencyState(EnumToString.fromString(AppItemState.values, newItemState!) ?? AppItemState.noState);
                                           },
-                                          value: CoreUtilities.getItemState(_.frequencyState.value).name,
+                                          value: CoreUtilities.getItemState(generatorController.frequencyState.value).name,
                                           alignment: Alignment.center,
                                           icon: const Icon(Icons.arrow_downward),
                                           iconSize: 15,
@@ -298,12 +298,12 @@ class NeomGeneratorPage extends StatelessWidget {
                                 buttons: [
                                   DialogButton(
                                     color: AppColor.bondiBlue75,
-                                    child: Obx(()=>_.isLoading.value ? const Center(child: CircularProgressIndicator())
+                                    child: Obx(()=>generatorController.isLoading.value ? const Center(child: CircularProgressIndicator())
                                         : Text(AppTranslationConstants.add.tr,
                                     )),
                                     onPressed: () async {
-                                      if(_.frequencyState > 0) {
-                                        await _.addPreset(context, frequencyPracticeState: _.frequencyState.value);
+                                      if(generatorController.frequencyState > 0) {
+                                        await generatorController.addPreset(context, frequencyPracticeState: generatorController.frequencyState.value);
                                         Navigator.pop(context);
                                       } else {
                                         Get.snackbar(
@@ -320,13 +320,13 @@ class NeomGeneratorPage extends StatelessWidget {
                           },
                         ),
                         GestureDetector(
-                          child: buildIconActionChip(icon: const Icon(Icons.add), controllerFunction: () async { await _.increaseFrequency();}),
+                          child: buildIconActionChip(icon: const Icon(Icons.add), controllerFunction: () async { await generatorController.increaseFrequency();}),
                           onLongPress: () {
-                            _.longPressed.value = true;
-                            _.timerDuration.value = NeomGeneratorConstants.recursiveCallTimerDuration;
-                            _.increaseOnLongPress();
+                            generatorController.longPressed.value = true;
+                            generatorController.timerDuration.value = NeomGeneratorConstants.recursiveCallTimerDuration;
+                            generatorController.increaseOnLongPress();
                           },
-                          onLongPressUp: () => _.longPressed.value = false,
+                          onLongPressUp: () => generatorController.longPressed.value = false,
                         ),
                       ],
                     ),
@@ -338,7 +338,7 @@ class NeomGeneratorPage extends StatelessWidget {
                       height: 60,
                       decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: _.isRecording ? Colors.grey.shade800 : Colors.grey.shade900,
+                      color: generatorController.isRecording ? Colors.grey.shade800 : Colors.grey.shade900,
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black12,
@@ -349,31 +349,31 @@ class NeomGeneratorPage extends StatelessWidget {
                       child: Stack(
                       alignment: Alignment.center,
                       children: [
-                        if (_.isRecording)
+                        if (generatorController.isRecording)
                           const SizedBox(
                             width: 60,
                             height: 60,
                             child: CircularProgressIndicator(),
                           ),
                         IconButton(
-                          onPressed: () => _.isRecording ? _.stopRecording() : _.startRecording(),
-                          icon: Icon(FontAwesomeIcons.microphone, size: 40, color: _.isRecording ? Colors.red : null),
+                          onPressed: () => generatorController.isRecording ? generatorController.stopRecording() : generatorController.startRecording(),
+                          icon: Icon(FontAwesomeIcons.microphone, size: 40, color: generatorController.isRecording ? Colors.red : null),
                         ),
                       ],
                     ),),
-                    onTap: () => _.isRecording ? _.stopRecording() : _.startRecording(),
-                    onLongPress: () => _.isRecording ? _.stopRecording() : _.startRecording(),
+                    onTap: () => generatorController.isRecording ? generatorController.stopRecording() : generatorController.startRecording(),
+                    onLongPress: () => generatorController.isRecording ? generatorController.stopRecording() : generatorController.startRecording(),
                   ),
                   AppTheme.heightSpace10,
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: _.isRecording || _.frequencyDescription.isEmpty ? Text(
-                      _.isRecording ? "${AppTranslationConstants.frequency.tr}: ${_.detectedFrequency.toInt()} Hz"
-                  : _.detectedFrequency == 0 ? GeneratorTranslationConstants.findsYourVoiceFrequency.tr : '',
-                      style: TextStyle(fontSize: _.isRecording ? 18 : 15,),
+                    child: generatorController.isRecording || generatorController.frequencyDescription.isEmpty ? Text(
+                      generatorController.isRecording ? "${AppTranslationConstants.frequency.tr}: ${generatorController.detectedFrequency.toInt()} Hz"
+                  : generatorController.detectedFrequency == 0 ? GeneratorTranslationConstants.findsYourVoiceFrequency.tr : '',
+                      style: TextStyle(fontSize: generatorController.isRecording ? 18 : 15,),
                       textAlign: TextAlign.justify,
                     ) : ReadMoreContainer(
-                      text: _.frequencyDescription.value,
+                      text: generatorController.frequencyDescription.value,
                       fontSize: 12,
                       trimLines: 5,
                     )
@@ -415,7 +415,7 @@ class NeomGeneratorPage extends StatelessWidget {
       //       mini: true,
       //       child: Icon(FontAwesomeIcons.chrome, size: 12,color: Colors.white,),
       //       onPressed: ()=> {
-      //         _.neom360viewerController.launchChromeVRView(context, url: 'https://larkintuckerllc.github.io/hello-react-360/')
+      //         generatorController.neom360viewerController.launchChromeVRView(context, url: 'https://larkintuckerllc.github.io/hello-react-360/')
       //       },
       //     )
       // ],
