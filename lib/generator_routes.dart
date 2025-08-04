@@ -5,12 +5,12 @@ import 'ui/chamber/chamber_page.dart';
 import 'ui/chamber/chamber_presets_page.dart';
 import 'ui/neom_generator_page.dart';
 
-class NeomGeneratorRoutes {
+class GeneratorRoutes {
 
   static final List<GetPage<dynamic>> routes = [
     GetPage(
         name: AppRouteConstants.generator,
-        page: () => const NeomGeneratorPage(),
+        page: () => NeomGeneratorPage(),
         transition: Transition.zoom,
     ),
     GetPage(

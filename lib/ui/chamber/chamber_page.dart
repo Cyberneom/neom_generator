@@ -10,7 +10,7 @@ import 'package:neom_commons/utils/constants/translations/common_translation_con
 import 'package:neom_core/utils/enums/owner_type.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 
-import '../../utils.constants/generator_translation_constants.dart';
+import '../../utils/constants/generator_translation_constants.dart';
 import '../widgets/chamber_widgets.dart';
 import 'chamber_controller.dart';
 
@@ -32,7 +32,7 @@ class ChamberPage extends StatelessWidget {
             : Column(
               children: [
                 ListTile(
-                  title: Text(ChamberTranslationConstants.createPresetList.tr),
+                  title: Text(GeneratorTranslationConstants.createPresetList.tr),
                   leading: SizedBox.square(
                     dimension: 40,
                     child: Center(

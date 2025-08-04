@@ -3,23 +3,22 @@ import 'package:neom_commons/app_flavour.dart';
 import 'package:neom_commons/utils/constants/app_page_id_constants.dart';
 import 'package:neom_core/app_config.dart';
 import 'package:neom_core/data/api_services/push_notification/firebase_messaging_calls.dart';
-import 'package:neom_core/data/firestore/chamber_firestore.dart';
-import 'package:neom_core/data/implementations/user_controller.dart';
 import 'package:neom_core/domain/model/band.dart';
 import 'package:neom_core/domain/model/neom/chamber.dart';
 import 'package:neom_core/domain/model/neom/chamber_preset.dart';
+import 'package:neom_core/domain/use_cases/user_service.dart';
 import 'package:neom_core/utils/enums/app_in_use.dart';
 import 'package:neom_core/utils/enums/chamber_preset_state.dart';
 import 'package:neom_core/utils/enums/owner_type.dart';
 import 'package:neom_core/utils/enums/push_notification_type.dart';
 
+import '../../data/firestore/chamber_firestore.dart';
 import '../../domain/use_cases/chamber_preset_service.dart';
-import '../../utils.constants/generator_translation_constants.dart';
+import '../../utils/constants/generator_translation_constants.dart';
 
 class ChamberPresetController extends GetxController implements ChamberPresetService {
 
-  var logger = AppConfig.logger;
-  final userController = Get.find<UserController>();
+  final userServiceImpl = Get.find<UserService>();
 
   ChamberPreset chamberPreset = ChamberPreset();
   Chamber chamber = Chamber();
@@ -40,11 +39,11 @@ class ChamberPresetController extends GetxController implements ChamberPresetSer
   @override
   void onInit() async {
     super.onInit();
-    logger.d("ItemlistItem Controller init");
+    AppConfig.logger.d("ItemlistItem Controller init");
     try {
-      profileId = userController.profile.id;
-      band = userController.band;
-      chamberOwner = userController.itemlistOwner;
+      profileId = userServiceImpl.profile.id;
+      band = userServiceImpl.band;
+      chamberOwner = userServiceImpl.itemlistOwnerType;
 
       if(Get.arguments != null) {
         List<dynamic> arguments = Get.arguments;
@@ -61,18 +60,18 @@ class ChamberPresetController extends GetxController implements ChamberPresetSer
       }
 
       if(chamber.id.isNotEmpty) {
-        logger.i("AppMediaItemController for Chamber: ${chamber.id} ${chamber.name} ");
-        logger.d("${chamber.chamberPresets?.length ?? 0} presets in chamber");
+        AppConfig.logger.i("AppMediaItemController for Chamber: ${chamber.id} ${chamber.name} ");
+        AppConfig.logger.d("${chamber.chamberPresets?.length ?? 0} presets in chamber");
         loadPresetsFromChamber();
       } else {
-        logger.i("ChamberPresetController Init ready loco with no chamber");
+        AppConfig.logger.i("ChamberPresetController Init ready loco with no chamber");
       }
 
       if(AppConfig.instance.appInUse == AppInUse.c) {
         isFixed = true;
       }
     } catch (e) {
-      logger.e(e.toString());
+      AppConfig.logger.e(e.toString());
     }
 
   }
@@ -91,33 +90,33 @@ class ChamberPresetController extends GetxController implements ChamberPresetSer
 
   @override
   Future<void> updateChamberPreset(ChamberPreset updatedPreset) async {
-    logger.d("Preview state ${updatedPreset.state}");
+    AppConfig.logger.d("Preview state ${updatedPreset.state}");
     if(updatedPreset.state == itemState.value) {
-      logger.d("Trying to set same status");
+      AppConfig.logger.d("Trying to set same status");
     } else {
       _prevItemState = updatedPreset.state;
       updatedPreset.state = itemState.value;
-      logger.d("updating itemlistItem ${updatedPreset.toString()}");
+      AppConfig.logger.d("updating itemlistItem ${updatedPreset.toString()}");
       try {
 
         if (await ChamberFirestore().updatePreset(chamber.id, updatedPreset)) {
           chamberPresets.update(updatedPreset.id, (preset) => preset);
-          userController.profile.chambers![chamber.id]!
+          userServiceImpl.profile.chambers![chamber.id]!
               .chamberPresets!.add(updatedPreset);
           updatedPreset.state = _prevItemState;
-          userController.profile.chambers![chamber.id]!
+          userServiceImpl.profile.chambers![chamber.id]!
               .chamberPresets!.remove(updatedPreset);
           if(await ChamberFirestore().deletePreset(chamber.id, updatedPreset)) {
-            logger.d("ChamberPreset was updated and old version deleted.");
+            AppConfig.logger.d("ChamberPreset was updated and old version deleted.");
           } else {
-            logger.d("ChamberPreset was updated but old version remains.");
+            AppConfig.logger.d("ChamberPreset was updated but old version remains.");
           }
           updatedPreset.state = itemState.value;
         } else {
-          logger.e("ChamberPreset not updated");
+          AppConfig.logger.e("ChamberPreset not updated");
         }
       } catch (e) {
-        logger.e(e.toString());
+        AppConfig.logger.e(e.toString());
       }
 
       Get.back();
@@ -128,40 +127,40 @@ class ChamberPresetController extends GetxController implements ChamberPresetSer
   @override
   Future<bool> addPresetToChamber(ChamberPreset chamberPreset, String chamberId) async {
 
-    logger.d("Item ${chamberPreset.name} would be added as $itemState for Itemlist $chamberId");
+    AppConfig.logger.d("Item ${chamberPreset.name} would be added as $itemState for Itemlist $chamberId");
 
     try {
       if(await ChamberFirestore().addPreset(chamberId, chamberPreset)) {
         if (chamberOwner == OwnerType.profile) {
-          if (userController.profile.itemlists!.isNotEmpty) {
-            logger.d("Adding item to global itemlist from userController");
-            userController.profile.chambers![chamberId]!.chamberPresets!.add(chamberPreset);
-            chamber = userController.profile.chambers![chamberId]!;
+          if (userServiceImpl.profile.itemlists!.isNotEmpty) {
+            AppConfig.logger.d("Adding item to global itemlist from userController");
+            userServiceImpl.profile.chambers![chamberId]!.chamberPresets!.add(chamberPreset);
+            chamber = userServiceImpl.profile.chambers![chamberId]!;
             loadPresetsFromChamber();
           }
 
           FirebaseMessagingCalls.sendPublicPushNotification(
-              fromProfile: userController.profile,
+              fromProfile: userServiceImpl.profile,
               notificationType: PushNotificationType.chamberPresetAdded,
               toProfileId: '',
-              title: ChamberTranslationConstants.chamberPresetAdded,
+              title: GeneratorTranslationConstants.chamberPresetAdded,
               referenceId: chamberPreset.id,
               imgUrl: chamberPreset.imgUrl
           );
 
           return true;
         } else if (chamberOwner == OwnerType.band) {
-          if (userController.band.itemlists!.isNotEmpty) {
-            logger.d("Adding item to global itemlist from userController");
-            userController.band.chambers![chamberId]!.chamberPresets!.add(chamberPreset);
-            chamber = userController.band.chambers![chamberId]!;
+          if (userServiceImpl.band.itemlists!.isNotEmpty) {
+            AppConfig.logger.d("Adding item to global itemlist from userController");
+            userServiceImpl.band.chambers![chamberId]!.chamberPresets!.add(chamberPreset);
+            chamber = userServiceImpl.band.chambers![chamberId]!;
             loadPresetsFromChamber();
           }
           return true;
         }
       }
     } catch (e) {
-      logger.e(e.toString());
+      AppConfig.logger.e(e.toString());
     }
 
     update([AppPageIdConstants.chamberPresets, AppPageIdConstants.chamber, AppPageIdConstants.chamberPresetDetails]);
@@ -170,20 +169,20 @@ class ChamberPresetController extends GetxController implements ChamberPresetSer
 
   @override
   Future<bool> removePresetFromChamber(ChamberPreset chamberPreset) async {
-    logger.d("removing itemlistItem ${chamberPreset.toString()}");
+    AppConfig.logger.d("removing itemlistItem ${chamberPreset.toString()}");
 
     try {
       if(await ChamberFirestore().deletePreset(chamber.id, chamberPreset)) {
-        logger.d("Removing item from global itemlist from userController");
-        userController.profile.chambers = await ChamberFirestore().fetchAll(ownerId: userController.profile.id);
+        AppConfig.logger.d("Removing item from global itemlist from userController");
+        userServiceImpl.profile.chambers = await ChamberFirestore().fetchAll(ownerId: userServiceImpl.profile.id);
         chamberPresets.remove(chamberPreset.id);
 
       } else {
-        logger.d("ChamberPreset not removed");
+        AppConfig.logger.d("ChamberPreset not removed");
         return false;
       }
     } catch (e) {
-      logger.e(e.toString());
+      AppConfig.logger.e(e.toString());
       return false;
     }
 
@@ -195,14 +194,14 @@ class ChamberPresetController extends GetxController implements ChamberPresetSer
 
   @override
   void setChamberPresetState(ChamberPresetState newState){
-    logger.d("Setting new chamberPresetState $newState");
+    AppConfig.logger.d("Setting new chamberPresetState $newState");
     itemState.value = newState.value;
     update([AppPageIdConstants.itemlistItem, AppPageIdConstants.appItem]);
   }
 
   @override
   Future<void> getChamberPresetDetails(ChamberPreset appMediaItem) async {
-    logger.d("getChamberPresetDetails ${appMediaItem.name}");
+    AppConfig.logger.d("getChamberPresetDetails ${appMediaItem.name}");
 
     if(appMediaItem.imgUrl.isEmpty && chamber.imgUrl.isNotEmpty) appMediaItem.imgUrl = chamber.imgUrl;
 
@@ -221,7 +220,7 @@ class ChamberPresetController extends GetxController implements ChamberPresetSer
 
     if(chamber.chamberPresets?.isNotEmpty ?? false) {
       chamber.chamberPresets?.forEach((preset) {
-        logger.d(preset.name);
+        AppConfig.logger.d(preset.name);
         presets[preset.id] = preset;
       });
     }

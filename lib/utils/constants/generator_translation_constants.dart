@@ -1,4 +1,4 @@
-class ChamberTranslationConstants {
+class GeneratorTranslationConstants {
 
   static const String createPresetList = "createPresetList";
   static const String savePreset = 'savePreset';

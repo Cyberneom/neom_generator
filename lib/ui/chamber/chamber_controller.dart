@@ -1,4 +1,3 @@
-
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:neom_commons/utils/app_utilities.dart';
@@ -6,23 +5,20 @@ import 'package:neom_commons/utils/constants/app_page_id_constants.dart';
 import 'package:neom_commons/utils/constants/translations/common_translation_constants.dart';
 import 'package:neom_commons/utils/constants/translations/message_translation_constants.dart';
 import 'package:neom_core/app_config.dart';
-import 'package:neom_core/data/firestore/chamber_firestore.dart';
-import 'package:neom_core/data/implementations/user_controller.dart';
 import 'package:neom_core/domain/model/app_profile.dart';
 import 'package:neom_core/domain/model/band.dart';
 import 'package:neom_core/domain/model/neom/chamber.dart';
 import 'package:neom_core/domain/use_cases/chamber_service.dart';
+import 'package:neom_core/domain/use_cases/user_service.dart';
 import 'package:neom_core/utils/constants/app_route_constants.dart';
 import 'package:neom_core/utils/enums/owner_type.dart';
 
-import '../../utils.constants/generator_translation_constants.dart';
-
-
+import '../../data/firestore/chamber_firestore.dart';
+import '../../utils/constants/generator_translation_constants.dart';
 
 class ChamberController extends GetxController implements ChamberService {
-
-  final logger = AppConfig.logger;
-  final userController = Get.find<UserController>();
+  
+  final userServiceImpl = Get.find<UserService>();
 
   Chamber currentChamber = Chamber();
 
@@ -50,29 +46,29 @@ class ChamberController extends GetxController implements ChamberService {
   @override
   void onInit() async {
     super.onInit();
-    logger.t("onInit Chamber Controller");
+    AppConfig.logger.t("onInit Chamber Controller");
 
     try {
-      userController.itemlistOwner = OwnerType.profile;
-      profile = userController.profile;
+      userServiceImpl.itemlistOwnerType = OwnerType.profile;
+      profile = userServiceImpl.profile;
       ownerId = profile.id;
       ownerName = profile.name;
 
       if(Get.arguments != null) {
         if(Get.arguments.isNotEmpty && Get.arguments[0] is Band) {
           band = Get.arguments[0];
-          userController.band = band!;
+          userServiceImpl.band = band!;
         }
 
         if(band != null) {
           ownerId = band!.id;
           ownerName = band!.name;
           ownerType = OwnerType.band;
-          userController.itemlistOwner = OwnerType.band;
+          userServiceImpl.itemlistOwnerType = OwnerType.band;
         }
       }
     } catch (e) {
-      logger.e(e.toString());
+      AppConfig.logger.e(e.toString());
     }
 
   }
@@ -80,7 +76,7 @@ class ChamberController extends GetxController implements ChamberService {
   @override
   void onReady() async {
     super.onReady();
-    logger.t('Chambers being loaded from ${ownerType.name}');
+    AppConfig.logger.t('Chambers being loaded from ${ownerType.name}');
     if(ownerType == OwnerType.profile) {
       chambers.value = profile.chambers ?? {};
     } else if(ownerType == OwnerType.band){
@@ -109,7 +105,7 @@ class ChamberController extends GetxController implements ChamberService {
 
   @override
   Future<void> createChamber() async {
-    logger.d("Start ${newChamberNameController.text} and ${newChamberDescController.text}");
+    AppConfig.logger.d("Start ${newChamberNameController.text} and ${newChamberDescController.text}");
 
     try {
       errorMsg.value = '';
@@ -131,29 +127,29 @@ class ChamberController extends GetxController implements ChamberService {
 
         ///DEPRECATED
         // if(isPublicNewItemlist.value) {
-        //   logger.i("Inserting Public Chamber to Public collection");
+        //   AppConfig.logger.i("Inserting Public Chamber to Public collection");
         //   newItemlistId = await ChamberFirestore().insert(newItemlist);
         // } else {
-        //   logger.i("Inserting Private Chamber to collection for profileId ${newItemlist.ownerId}");
+        //   AppConfig.logger.i("Inserting Private Chamber to collection for profileId ${newItemlist.ownerId}");
         //   newItemlistId = await ChamberFirestore().insert(newItemlist);
         // }
 
-        logger.i("Empty Chamber created successfully for profile ${newItemlist.ownerId}");
+        AppConfig.logger.i("Empty Chamber created successfully for profile ${newItemlist.ownerId}");
         newItemlist.id = newItemlistId;
 
         if(newItemlistId.isNotEmpty){
           chambers[newItemlistId] = newItemlist;
-          logger.t("Itemlists $chambers");
+          AppConfig.logger.t("Itemlists $chambers");
           clearNewChamber();
           AppUtilities.showSnackBar(
-              title: ChamberTranslationConstants.chamberPrefs.tr,
-              message: ChamberTranslationConstants.chamberCreated.tr
+              title: GeneratorTranslationConstants.chamberPrefs.tr,
+              message: GeneratorTranslationConstants.chamberCreated.tr
           );
         } else {
-          logger.d("Something happens trying to insert chamber");
+          AppConfig.logger.d("Something happens trying to insert chamber");
         }
       } else {
-        logger.d(MessageTranslationConstants.pleaseFillItemlistInfo.tr);
+        AppConfig.logger.d(MessageTranslationConstants.pleaseFillItemlistInfo.tr);
         errorMsg.value = newChamberNameController.text.isEmpty ? MessageTranslationConstants.pleaseAddName
             : MessageTranslationConstants.pleaseAddDescription;
 
@@ -163,7 +159,7 @@ class ChamberController extends GetxController implements ChamberService {
         );
       }
     } catch (e) {
-      logger.e(e.toString());
+      AppConfig.logger.e(e.toString());
     }
 
     update([AppPageIdConstants.chamber]);
@@ -171,14 +167,14 @@ class ChamberController extends GetxController implements ChamberService {
 
   @override
   Future<void> deleteChamber(Chamber chamber) async {
-    logger.d("Removing for $chamber");
+    AppConfig.logger.d("Removing for $chamber");
 
     try {
       isLoading.value = true;
       update([AppPageIdConstants.itemlist]);
 
       if(await ChamberFirestore().delete(chamber.id)) {
-        logger.d("Chamber ${chamber.id} removed");
+        AppConfig.logger.d("Chamber ${chamber.id} removed");
 
         chambers.remove(chamber.id);
         AppUtilities.showSnackBar(
@@ -188,12 +184,12 @@ class ChamberController extends GetxController implements ChamberService {
       } else {
         AppUtilities.showSnackBar(
             title: CommonTranslationConstants.itemlistPrefs.tr,
-            message: CommonTranslationConstants.itemlistRemovedErrorMsg.tr
+            message: MessageTranslationConstants.itemlistRemovedErrorMsg.tr
         );
-        logger.e("Something happens trying to remove itemlist");
+        AppConfig.logger.e("Something happens trying to remove itemlist");
       }
     } catch (e) {
-      logger.e(e.toString());
+      AppConfig.logger.e(e.toString());
     }
 
     isLoading.value = false;
@@ -204,7 +200,7 @@ class ChamberController extends GetxController implements ChamberService {
   @override
   Future<void> updateChamber(String itemlistId, Chamber itemlist) async {
 
-    logger.d("Updating to $itemlist");
+    AppConfig.logger.d("Updating to $itemlist");
 
     try {
       isLoading.value = true;
@@ -224,7 +220,7 @@ class ChamberController extends GetxController implements ChamberService {
         }
 
         if(await ChamberFirestore().update(itemlist)){
-          logger.d("Chamber $itemlistId updated");
+          AppConfig.logger.d("Chamber $itemlistId updated");
           chambers[itemlist.id] = itemlist;
           clearNewChamber();
           AppUtilities.showSnackBar(
@@ -232,10 +228,10 @@ class ChamberController extends GetxController implements ChamberService {
               message: CommonTranslationConstants.itemlistUpdated.tr
           );
         } else {
-          logger.i("Something happens trying to update itemlist");
+          AppConfig.logger.i("Something happens trying to update itemlist");
           AppUtilities.showSnackBar(
               title: CommonTranslationConstants.itemlistPrefs.tr,
-              message: CommonTranslationConstants.itemlistUpdatedErrorMsg.tr
+              message: MessageTranslationConstants.itemlistUpdatedErrorMsg.tr
           );
         }
       } else {
@@ -245,10 +241,10 @@ class ChamberController extends GetxController implements ChamberService {
         );
       }
     } catch (e) {
-      logger.e(e.toString());
+      AppConfig.logger.e(e.toString());
       AppUtilities.showSnackBar(
           title: CommonTranslationConstants.itemlistPrefs.tr,
-          message: CommonTranslationConstants.itemlistUpdatedErrorMsg.tr
+          message: MessageTranslationConstants.itemlistUpdatedErrorMsg.tr
       );
     }
 
@@ -265,9 +261,9 @@ class ChamberController extends GetxController implements ChamberService {
 
   @override
   Future<void> setPrivacyOption() async {
-    logger.t('setPrivacyOption for Playlist');
+    AppConfig.logger.t('setPrivacyOption for Playlist');
     isPublicNewChamber.value = !isPublicNewChamber.value;
-    logger.d("New Itemlist would be ${isPublicNewChamber.value ? 'Public':'Private'}");
+    AppConfig.logger.d("New Itemlist would be ${isPublicNewChamber.value ? 'Public':'Private'}");
     update([AppPageIdConstants.chamber, AppPageIdConstants.chamberPresets]);
   }
 

@@ -10,15 +10,14 @@ import 'package:neom_commons/utils/constants/translations/app_translation_consta
 import 'package:neom_commons/utils/constants/translations/common_translation_constants.dart';
 import 'package:neom_core/app_config.dart';
 import 'package:neom_core/app_properties.dart';
-import 'package:neom_core/data/firestore/chamber_firestore.dart';
 import 'package:neom_core/data/firestore/profile_firestore.dart';
-import 'package:neom_core/data/implementations/user_controller.dart';
 import 'package:neom_core/domain/model/app_profile.dart';
 import 'package:neom_core/domain/model/neom/chamber.dart';
 import 'package:neom_core/domain/model/neom/chamber_preset.dart';
 import 'package:neom_core/domain/model/neom/neom_frequency.dart';
 import 'package:neom_core/domain/model/neom/neom_parameter.dart';
 import 'package:neom_core/domain/use_cases/frequency_service.dart';
+import 'package:neom_core/domain/use_cases/user_service.dart';
 import 'package:neom_core/utils/enums/app_item_state.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:pitch_detector_dart/pitch_detector.dart';
@@ -27,14 +26,15 @@ import 'package:surround_frequency_generator/surround_frequency_generator.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 
+import '../data/firestore/chamber_firestore.dart';
 import '../domain/use_cases/neom_generator_service.dart';
-import '../utils.constants/generator_translation_constants.dart';
-import '../utils.constants/neom_generator_constants.dart';
+import '../utils/constants/generator_translation_constants.dart';
+import '../utils/constants/neom_generator_constants.dart';
 
 class NeomGeneratorController extends GetxController implements NeomGeneratorService {
 
-  final userController = Get.find<UserController>();
-  final frequencyServiceImpl = Get.find<FrequencyService>();
+  UserService? userServiceImpl;
+  FrequencyService? frequencyServiceImpl;
 
   ///EXPERIMENTAL
   // final neom360viewerController = Get.put(Neom360ViewerController());
@@ -43,7 +43,7 @@ class NeomGeneratorController extends GetxController implements NeomGeneratorSer
   WebViewController webViewAndroidController = WebViewController();
   PlatformWebViewController webViewIosController = PlatformWebViewController(const PlatformWebViewControllerCreationParams());
 
-  AppProfile profile = AppProfile();
+  AppProfile? profile;
 
   ChamberPreset chamberPreset = ChamberPreset();
 
@@ -81,8 +81,18 @@ class NeomGeneratorController extends GetxController implements NeomGeneratorSer
         }
       }
 
-      profile = userController.profile;
-      chambers.value = profile.chambers ?? {};
+
+      if(Get.isRegistered<UserService>()) {
+        userServiceImpl = Get.find<UserService>();
+      }
+
+      if(Get.isRegistered<FrequencyService>()) {
+        frequencyServiceImpl = Get.find<FrequencyService>();
+      }
+
+
+      profile = userServiceImpl?.profile;
+      chambers.value = profile?.chambers ?? {};
       soundController = SoundController();
 
       chamberPreset.neomFrequency ??= NeomFrequency();
@@ -163,9 +173,9 @@ class NeomGeneratorController extends GetxController implements NeomGeneratorSer
 
     chamberPreset.neomFrequency!.frequency = frequency.ceilToDouble();
     frequencyDescription.value = "";
-    for (var element in frequencyServiceImpl.frequencies.values) {
-      if(element.frequency.ceilToDouble() == frequency.ceilToDouble()) {
-        frequencyDescription.value = element.description;
+    for (NeomFrequency neomFreq in frequencyServiceImpl?.frequencies.values ?? []) {
+      if(neomFreq.frequency.ceilToDouble() == frequency.ceilToDouble()) {
+        frequencyDescription.value = neomFreq.description;
       }
     }
 
@@ -285,7 +295,7 @@ class NeomGeneratorController extends GetxController implements NeomGeneratorSer
         chamber.value.name = CommonTranslationConstants.myFavItemlistName.tr;
         chamber.value.description = CommonTranslationConstants.myFavItemlistDesc.tr;
         chamber.value.imgUrl = AppProperties.getAppLogoUrl();
-        chamber.value.ownerId = profile.id;
+        chamber.value.ownerId = profile?.id ?? '';
         chamber.value.id = await ChamberFirestore().insert(chamber.value);
       } else {
         if(chamber.value.id.isEmpty) chamber.value.id = chambers.values.first.id;
@@ -298,13 +308,13 @@ class NeomGeneratorController extends GetxController implements NeomGeneratorSer
               "_${chamberPreset.neomParameter!.x.toString()}_${chamberPreset.neomParameter!.y.toString()}_${chamberPreset.neomParameter!.z.toString()}";
           chamberPreset.name = "${AppTranslationConstants.frequency.tr} ${chamberPreset.neomFrequency!.frequency.ceilToDouble().toString()} Hz";
           chamberPreset.imgUrl = AppProperties.getAppLogoUrl();
-          chamberPreset.ownerId = profile.id;
+          chamberPreset.ownerId = profile?.id ?? '';
           chamberPreset.neomFrequency!.description = frequencyDescription.value;
           if(await ChamberFirestore().addPreset(chamber.value.id, chamberPreset)) {
-            await ProfileFirestore().addChamberPreset(profileId: profile.id, chamberPresetId: chamberPreset.id);
-            await userController.reloadProfileItemlists();
-            await userController.loadProfileChambers();
-            userController.profile.chamberPresets?.add(chamberPreset.id);
+            await ProfileFirestore().addChamberPreset(profileId: profile?.id ?? '', chamberPresetId: chamberPreset.id);
+            await userServiceImpl?.reloadProfileItemlists();
+            await userServiceImpl?.loadProfileChambers();
+            userServiceImpl?.profile.chamberPresets?.add(chamberPreset.id);
             AppConfig.logger.d("Preset added to Neom Chamber");
           } else {
             AppConfig.logger.d("Preset not added to Neom Chamber");
@@ -347,8 +357,8 @@ class NeomGeneratorController extends GetxController implements NeomGeneratorSer
       if(chamber.value.id.isNotEmpty) {
         try {
           if(await ChamberFirestore().deletePreset(chamber.value.id, chamberPreset)) {
-            await userController.reloadProfileItemlists();
-            chambers.value = userController.profile.chambers ?? {};
+            await userServiceImpl?.reloadProfileItemlists();
+            chambers.value = userServiceImpl?.profile.chambers ?? {};
             AppConfig.logger.d("Preset removed from Neom Chamber");
           } else {
             AppConfig.logger.d("Preset not removed from Neom Chamber");
@@ -356,13 +366,13 @@ class NeomGeneratorController extends GetxController implements NeomGeneratorSer
         } catch (e) {
           AppConfig.logger.e(e.toString());
           AppUtilities.showSnackBar(
-              title: ChamberTranslationConstants.neomChamber.tr,
+              title: GeneratorTranslationConstants.neomChamber.tr,
               message: 'Algo salió mal eliminando tu preset de tu cámara Neom.'
           );
         }
 
         AppUtilities.showSnackBar(
-            title: ChamberTranslationConstants.neomChamber.tr,
+            title: GeneratorTranslationConstants.neomChamber.tr,
             message: 'El preajuste para la frecuencia de "${chamberPreset.neomFrequency!.frequency.ceilToDouble().toString()}"'
                 ' Hz fue removido de la Cámara Neom: ${chamber.value.name} satisfactoriamente.'
         );
@@ -398,9 +408,9 @@ class NeomGeneratorController extends GetxController implements NeomGeneratorSer
     AppConfig.logger.d("Increasing Frequency from ${chamberPreset.neomFrequency!.frequency} to $newFrequency");
     chamberPreset.neomFrequency!.frequency = newFrequency;
     frequencyDescription.value = "";
-    for (var element in frequencyServiceImpl.frequencies.values) {
-      if(element.frequency.ceilToDouble() == newFrequency) {
-        frequencyDescription.value = element.description;
+    for (NeomFrequency neomFreq in frequencyServiceImpl?.frequencies.values ?? []) {
+      if(neomFreq.frequency.ceilToDouble() == newFrequency) {
+        frequencyDescription.value = neomFreq.description;
       }
     }
 
